@@ -1,0 +1,25 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}
+
+type Mutation {
+    postState(grid: [[String]]!, user: String!): ID!
+}
+
+type Query {
+    states: [State!]
+}
+
+type State {
+    grid: [[String]]!
+    id: ID!
+    user: String!
+}
+
+type Subscription {
+    states: [State!]
+}
