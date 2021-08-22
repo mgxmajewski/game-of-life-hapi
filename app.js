@@ -20,10 +20,13 @@ const init = async () => {
 
     await server.start();
     console.log('Server running on %s', server.info.uri);
+    console.log('What does server have to offer?');
+    for (let [key, value] of Object.entries(server)) {
+        console.log(`${key}: ${value}`);
+    }
 };
 
 process.on('unhandledRejection', (err) => {
-
     console.log(err);
     process.exit(1);
 });
