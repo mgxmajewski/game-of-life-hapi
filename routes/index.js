@@ -22,7 +22,9 @@ exports.configureRoutes = (server) => {
             path:'/date/required',
             config: {
                 validate: {
-                    payload: joi.object({ date:joi.date().required()
+                    payload: joi.object({
+                        from :joi.date().min('now').required(),
+                        to:joi.date().greater(joi.ref('from')).required( )
                     })
                 }
             },
