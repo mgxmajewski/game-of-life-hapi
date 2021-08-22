@@ -1,6 +1,6 @@
 'use strict';
-
 const Hapi = require('@hapi/hapi');
+const { configureRoutes } = require('./routes');
 
 const init = async () => {
 
@@ -8,22 +8,13 @@ const init = async () => {
         port: 3000,
         host: 'localhost'
     });
-
-    server.route({
-        method: 'GET',
-        path: '/',
-        handler: (request, h) => {
-
-            return 'Hello World!';
-        }
-    });
-
     await server.start();
+    await configureRoutes(server);
     console.log('Server running on %s', server.info.uri);
-    console.log('What does server have to offer?');
-    for (let [key, value] of Object.entries(server)) {
-        console.log(`${key}: ${value}`);
-    }
+    // console.log('What does server have to offer?');
+    // for (let [key, value] of Object.entries(server)) {
+    //     console.log(`${key}: ${value}`);
+    // }
 };
 
 process.on('unhandledRejection', (err) => {
