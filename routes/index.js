@@ -2,12 +2,6 @@
 const joi = require('joi');
 const axios = require('axios');
 
-const hello = {
-    handler: function (request, h) {
-        return 'Hello World!';
-    }
-};
-
 const data = JSON.stringify({
     query: `query {
   states{
@@ -26,16 +20,16 @@ const config = {
     data : data
 };
 
-const axiosGql = () => axios(config)
+const axiosGql = () =>
+    axios(config)
     .then(function (response) {
         const states = response.data.data.states
         const lastIndex = states.length-1
-        const theNewestState = states[lastIndex].grid
-        console.log(theNewestState)
-        console.log(timeoutGetter())
-
-        return theNewestState
+        return states[lastIndex].grid
     })
+    .then(
+        (d)=> console.log(`${d}`)
+    )
     .catch(function (error) {
         console.log(error);
     })
@@ -72,11 +66,6 @@ function updateInterval () {
 
 exports.configureRoutes = (server) => {
     return server.route([
-        {
-            method: 'GET',
-            path: '/',
-            config: hello
-        },
         {
             method:'POST',
             path: '/state/{timeout}',
