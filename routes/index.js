@@ -20,30 +20,22 @@ const config = {
     data : data
 };
 
-const axiosGql = () =>
-    axios(config)
-    .then(function (response) {
-        const states = response.data.data.states
-        const lastIndex = states.length-1
-        return states[lastIndex].grid
-    })
-    .then(
-        (d)=> console.log(`${d}`)
-    )
-    .catch(function (error) {
-        console.log(error);
-    })
+const axiosGql = () => {
+    return axios(config)
+        .then(function (response) {
+            const states = response.data.data.states
+            const lastIndex = states.length - 1
+            // console.log(states[lastIndex].grid)
+            return states[lastIndex].grid
+        })
+        .then(
+            (d) => console.log(`${d}`)
+        )
+        .catch(function (error) {
+            console.log(error);
+        });
+}
 
-const giveState = () => axiosGql()
-
-const qclState = {
-    handler: async function (request, h) {
-        const timeOutParam = request.params.timeout
-        timeoutSetter(timeOutParam)
-        updateInterval()
-        return 'success'
-    }
-};
 
 // Create hook to capture param from request to control interval timeout
 function timeOutState(initial){
@@ -60,9 +52,18 @@ function updateInterval () {
     const timeOut = timeoutGetter()
     clearInterval(interval)
     if (timeOut !== '101') {
-        interval = setInterval(giveState, timeOut);
+        interval = setInterval(axiosGql, timeOut);
     }
 }
+
+const qclState = {
+    handler: function (request, h) {
+        const timeOutParam = request.params.timeout
+        timeoutSetter(timeOutParam)
+        updateInterval()
+        return 'success'
+    }
+};
 
 exports.configureRoutes = (server) => {
     return server.route([
