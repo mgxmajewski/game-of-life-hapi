@@ -32,6 +32,8 @@ const axiosGql = () => axios(config)
         const lastIndex = states.length-1
         const theNewestState = states[lastIndex].grid
         console.log(theNewestState)
+        console.log(timeoutGetter())
+
         return theNewestState
     })
     .catch(function (error) {
@@ -47,6 +49,7 @@ const qclState = {
     handler: async function (request, h) {
         const timeOutParam = request.params.timeout
         timeoutSetter(timeOutParam)
+        startInterval()
         return await giveState()
     }
 };
@@ -59,6 +62,13 @@ function timeOutState(initial){
     }]
 }
 const [timeoutGetter, timeoutSetter] = timeOutState(3000)
+
+// Create mutable interval capturing grid state in timeout interval given via request
+let interval
+function startInterval () {
+    clearInterval(interval)
+    interval = setInterval(giveState, timeoutGetter());
+}
 
 exports.configureRoutes = (server) => {
     return server.route([
