@@ -18,17 +18,8 @@ exports.configureRoutes = (server) => {
             config: hello
         },
         {
-            method:'POST',
-            path:'/date/required',
-            config: {
-                validate: {
-                    payload: joi.object({
-                        from :joi.date().min('now').required(),
-                        to:joi.date().greater(joi.ref('from')).required( )
-                    })
-                }
-            },
-            handler: (request, h) => {
-                return request.payload;}
+            method:'GET',
+            path: '/state',
+            config: qclState
         }
     ])}
