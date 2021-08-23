@@ -57,8 +57,8 @@ exports.configureRoutes = (server) => {
             config: hello
         },
         {
-            method:'GET',
-            path: '/state',
+            method:'POST',
+            path: '/state/{timeout}',
             config: qclState
         }
     ])}
