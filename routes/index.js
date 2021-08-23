@@ -20,20 +20,19 @@ const config = {
     data : data
 };
 
-const axiosGql = () => {
-    return axios(config)
-        .then(function (response) {
-            const states = response.data.data.states
+async function stateProcessor ()  {
+    return await axios(config)
+        .then((stateFromGql) => {
+            const states = stateFromGql.data.data.states
             const lastIndex = states.length - 1
             // console.log(states[lastIndex].grid)
             return states[lastIndex].grid
         })
-        .then(
-            (d) => console.log(`${d}`)
-        )
+        .then((d) => `${d}`)
+        .then((d) => console.log(d))
         .catch(function (error) {
             console.log(error);
-        });
+        })
 }
 
 
@@ -52,7 +51,7 @@ function updateInterval () {
     const timeOut = timeoutGetter()
     clearInterval(interval)
     if (timeOut !== '101') {
-        interval = setInterval(axiosGql, timeOut);
+        interval = setInterval(stateProcessor, timeOut);
     }
 }
 
