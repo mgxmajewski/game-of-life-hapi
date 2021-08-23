@@ -45,9 +45,20 @@ const giveState = () => new Promise((resolve, reject) =>{
 
 const qclState = {
     handler: async function (request, h) {
+        const timeOutParam = request.params.timeout
+        timeoutSetter(timeOutParam)
         return await giveState()
     }
 };
+
+// Create hook to capture param from request to control interval timeout
+function timeOutState(initial){
+    let timeout = initial
+    return [() => timeout, (v) => {
+        timeout = v
+    }]
+}
+const [timeoutGetter, timeoutSetter] = timeOutState(3000)
 
 exports.configureRoutes = (server) => {
     return server.route([
