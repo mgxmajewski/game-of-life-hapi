@@ -49,7 +49,7 @@ const qclState = {
     handler: async function (request, h) {
         const timeOutParam = request.params.timeout
         timeoutSetter(timeOutParam)
-        startInterval()
+        updateInterval()
         return await giveState()
     }
 };
@@ -65,9 +65,12 @@ const [timeoutGetter, timeoutSetter] = timeOutState(3000)
 
 // Create mutable interval capturing grid state in timeout interval given via request
 let interval
-function startInterval () {
+function updateInterval () {
+    const timeOut = timeoutGetter()
     clearInterval(interval)
-    interval = setInterval(giveState, timeoutGetter());
+    if (timeOut !== '101') {
+        interval = setInterval(giveState, timeOut);
+    }
 }
 
 exports.configureRoutes = (server) => {
