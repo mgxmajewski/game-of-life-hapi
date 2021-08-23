@@ -40,17 +40,14 @@ const axiosGql = () => axios(config)
         console.log(error);
     })
 
-const giveState = () => new Promise((resolve, reject) =>{
-    resolve(axiosGql())
-    reject('giveState promise rejected')
-})
+const giveState = () => axiosGql()
 
 const qclState = {
     handler: async function (request, h) {
         const timeOutParam = request.params.timeout
         timeoutSetter(timeOutParam)
         updateInterval()
-        return await giveState()
+        return 'success'
     }
 };
 
