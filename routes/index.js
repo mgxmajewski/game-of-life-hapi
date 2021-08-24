@@ -1,6 +1,7 @@
 'use strict';
 const joi = require('joi');
 const axios = require('axios');
+const { useState } = require('../helpers/useState')
 
 const data = JSON.stringify({
     query: `query {
@@ -45,13 +46,8 @@ async function stateProcessor ()  {
 
 
 // Create hook to capture param from request to control interval timeout
-function timeOutState(initial){
-    let timeout = initial
-    return [() => timeout, (v) => {
-        timeout = v
-    }]
-}
-const [timeoutGetter, timeoutSetter] = timeOutState(3000)
+
+const [timeoutGetter, timeoutSetter] = useState(3000)
 
 // Create mutable interval capturing grid state in timeout interval given via request
 let interval
@@ -68,6 +64,7 @@ const qclState = {
         const timeOutParam = request.params.timeout
         timeoutSetter(timeOutParam)
         updateInterval()
+        console.log(h.request.params.timeout)
         return 'success'
     }
 };
