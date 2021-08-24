@@ -2,6 +2,7 @@
 const joi = require('joi');
 const axios = require('axios');
 const { useState } = require('../helpers/useState')
+const { GameOfLife } = require("../helpers/game_of_life_core/gameOfLife");
 
 const data = JSON.stringify({
     query: `query {
@@ -24,19 +25,37 @@ const config = {
 const parseFetchedData = ((FetchedFromAxios) => {
     const states = FetchedFromAxios.data.data.states
     const lastIndex = states.length - 1
-    console.log(states[lastIndex].grid)
     return states[lastIndex].grid
 })
+
+const siftAliveCells = ((parsedAxiosData) => {
+    const rows = parsedAxiosData.length
+    let aliveCellArray = []
+    for (let row = 0; row<rows; row++){
+        const columns = parsedAxiosData[row].length
+        for (let col = 0; col<columns; col++){
+            const currentCell = parsedAxiosData[row][col]
+            if( currentCell === '#'){
+                let coords;
+                coords = [row, col];
+                aliveCellArray.push(coords)
+            }
+        }
+    }
+    return aliveCellArray
+})
+
 
 const renderNextFrame = ((parsedFetched) =>{
     return `${parsedFetched}`
 })
 
 async function stateProcessor ()  {
-    try{
+    try {
         const FetchedFromAxios = await axios(config)
         const parsedAxiosData = await parseFetchedData(FetchedFromAxios)
-        const nextFrame = renderNextFrame(parsedAxiosData)
+        const siftedAliveCells = siftAliveCells(parsedAxiosData)
+        const nextFrame = renderNextFrame(siftedAliveCells)
         console.log(nextFrame)
         return nextFrame
     } catch(error) {
