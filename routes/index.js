@@ -1,8 +1,10 @@
 'use strict';
 const joi = require('joi');
 const axios = require('axios');
-const { useState } = require('../helpers/useState')
+const { useState } = require('../helpers/useState');
+const { getLongestRow } = require("../helpers/getLongestRow");
 const { GameOfLife } = require("../helpers/game_of_life_core/gameOfLife");
+
 
 const data = JSON.stringify({
     query: `query {
@@ -28,9 +30,13 @@ const parseFetchedData = ((FetchedFromAxios) => {
     return states[lastIndex].grid
 })
 
-const siftAliveCells = ((parsedAxiosData) => {
+const parseGrid = ((parsedAxiosData) => {
     const rows = parsedAxiosData.length
-    let aliveCellArray = []
+    const maxColumns = getLongestRow(parsedAxiosData)
+    let aliveCellArray = {
+        size: [rows, maxColumns],
+        cells : []
+    }
     for (let row = 0; row<rows; row++){
         const columns = parsedAxiosData[row].length
         for (let col = 0; col<columns; col++){
@@ -38,7 +44,7 @@ const siftAliveCells = ((parsedAxiosData) => {
             if( currentCell === '#'){
                 let coords;
                 coords = [row, col];
-                aliveCellArray.push(coords)
+                aliveCellArray.cells.push(coords)
             }
         }
     }
@@ -46,16 +52,23 @@ const siftAliveCells = ((parsedAxiosData) => {
 })
 
 
-const renderNextFrame = ((parsedFetched) =>{
-    return `${parsedFetched}`
+const renderNextFrame = ((parsedGrid) => {
+    const rows = parsedGrid.size[0]
+    const columns = parsedGrid.size[1]
+    const state = parsedGrid.cells
+    const grid = new GameOfLife(rows, columns, state)
+    grid.initiateLife = state
+    grid.updateGrid()
+    return grid.cellGrid.gridView
 })
 
 async function stateProcessor ()  {
     try {
         const FetchedFromAxios = await axios(config)
-        const parsedAxiosData = await parseFetchedData(FetchedFromAxios)
-        const siftedAliveCells = siftAliveCells(parsedAxiosData)
-        const nextFrame = renderNextFrame(siftedAliveCells)
+        const currentGrid = await parseFetchedData(FetchedFromAxios)
+        const parsedGrid = parseGrid(currentGrid)
+        const nextFrame = renderNextFrame(parsedGrid)
+        console.log(currentGrid)
         console.log(nextFrame)
         return nextFrame
     } catch(error) {
