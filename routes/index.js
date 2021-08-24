@@ -20,19 +20,27 @@ const config = {
     data : data
 };
 
+const parseFetchedData = ((FetchedFromAxios) => {
+    const states = FetchedFromAxios.data.data.states
+    const lastIndex = states.length - 1
+    console.log(states[lastIndex].grid)
+    return states[lastIndex].grid
+})
+
+const renderNextFrame = ((parsedFetched) =>{
+    return `${parsedFetched}`
+})
+
 async function stateProcessor ()  {
-    return await axios(config)
-        .then((stateFromGql) => {
-            const states = stateFromGql.data.data.states
-            const lastIndex = states.length - 1
-            // console.log(states[lastIndex].grid)
-            return states[lastIndex].grid
-        })
-        .then((d) => `${d}`)
-        .then((d) => console.log(d))
-        .catch(function (error) {
-            console.log(error);
-        })
+    try{
+        const FetchedFromAxios = await axios(config)
+        const parsedAxiosData = await parseFetchedData(FetchedFromAxios)
+        const nextFrame = renderNextFrame(parsedAxiosData)
+        console.log(nextFrame)
+        return nextFrame
+    } catch(error) {
+        console.log(new Error(error))
+    }
 }
 
 
