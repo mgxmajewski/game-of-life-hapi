@@ -15,7 +15,7 @@ const data = JSON.stringify({
     variables: {}
 });
 
-const config = {
+const configGetGrid = {
     method: 'post',
     url: 'http://localhost:4000/',
     headers: {
@@ -23,6 +23,8 @@ const config = {
     },
     data : data
 };
+
+
 
 const parseFetchedData = ((FetchedFromAxios) => {
     const states = FetchedFromAxios.data.data.states
@@ -62,15 +64,39 @@ const renderNextFrame = ((parsedGrid) => {
     return grid.cellGrid.gridView
 })
 
+const gridToPost= ((nextFrame) =>{
+    return JSON.stringify({
+        query: `mutation ($grid: [[String]]!){
+  postState(
+    user: "MM", 
+    grid: $grid
+    )
+}`,
+        variables: {"grid":nextFrame}
+    });
+})
+
+const configPostGrid = ((gridToPost) => {
+    return {
+        method: 'post',
+        url: 'http://localhost:4000/',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: gridToPost
+    }
+});
+
 async function stateProcessor ()  {
     try {
-        const FetchedFromAxios = await axios(config)
+        const FetchedFromAxios = await axios(configGetGrid)
         const currentGrid = await parseFetchedData(FetchedFromAxios)
         const parsedGrid = parseGrid(currentGrid)
         const nextFrame = renderNextFrame(parsedGrid)
+        const dataToPost = gridToPost(nextFrame)
+        const configurationToPostGrid = configPostGrid(dataToPost)
         console.log(currentGrid)
-        console.log(nextFrame)
-        return nextFrame
+        return axios(configurationToPostGrid)
     } catch(error) {
         console.log(new Error(error))
     }
