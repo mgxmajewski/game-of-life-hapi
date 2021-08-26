@@ -36,7 +36,7 @@ const parseGrid = ((parsedAxiosData) => {
     const rows = parsedAxiosData.length
     const maxColumns = getLongestRow(parsedAxiosData)
     let aliveCellArray = {
-        size: [rows, maxColumns],
+        size: [maxColumns, rows],
         cells : []
     }
     for (let row = 0; row<rows; row++){
@@ -59,7 +59,7 @@ const renderNextFrame = ((parsedGrid) => {
     const rows = parsedGrid.size[1]
     const columns = parsedGrid.size[0]
     const state = parsedGrid.cells
-    const grid = new GameOfLife(rows, columns, state)
+    const grid = new GameOfLife(columns, rows, state)
     grid.initiateLife = state
     grid.updateGrid()
     return grid.cellGrid.gridView
