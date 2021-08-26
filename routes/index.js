@@ -45,7 +45,8 @@ const parseGrid = ((parsedAxiosData) => {
             const currentCell = parsedAxiosData[row][col]
             if( currentCell === '#'){
                 let coords;
-                coords = [row, col];
+                // coords as they will be retrieved backwards
+                coords = [col, row];
                 aliveCellArray.cells.push(coords)
             }
         }
@@ -55,8 +56,8 @@ const parseGrid = ((parsedAxiosData) => {
 
 
 const renderNextFrame = ((parsedGrid) => {
-    const rows = parsedGrid.size[0]
-    const columns = parsedGrid.size[1]
+    const rows = parsedGrid.size[1]
+    const columns = parsedGrid.size[0]
     const state = parsedGrid.cells
     const grid = new GameOfLife(rows, columns, state)
     grid.initiateLife = state
