@@ -1,5 +1,6 @@
 'use strict';
 const Hapi = require('@hapi/hapi');
+const Connection = require('./dbConfig');
 const { configureRoutes } = require('./routes');
 
 const init = async () => {
