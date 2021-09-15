@@ -12,3 +12,7 @@ seq.authenticate()
     .catch(err=>
     {console.error('Connection Disrupted.', err)})
 
+module.exports = {
+    useModel:require('../models/User')(seq)
+}
+
