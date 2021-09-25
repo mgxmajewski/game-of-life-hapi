@@ -26,7 +26,7 @@ const configGetGrid = {
 
 
 
-const parseFetchedData = ((FetchedFromAxios) => {
+const getGridFromFetchedData = ((FetchedFromAxios) => {
     const states = FetchedFromAxios.data.data.states
     const lastIndex = states.length - 1
     return states[lastIndex].grid
@@ -91,7 +91,7 @@ const configPostGrid = ((gridToPost) => {
 async function stateProcessor ()  {
     try {
         const FetchedFromAxios = await axios(configGetGrid)
-        const currentGrid = await parseFetchedData(FetchedFromAxios)
+        const currentGrid = await getGridFromFetchedData(FetchedFromAxios)
         const parsedGrid = parseGrid(currentGrid)
         const nextFrame = renderNextFrame(parsedGrid)
         const dataToPost = gridToPost(nextFrame)
@@ -128,11 +128,25 @@ const qclState = {
     }
 };
 
+const stateMutation = {
+    handler: function (request, h) {
+        const payload = JSON.parse(request.payload)
+        console.log(payload.cell)
+        console.log(payload.grid)
+        return 'grid to mutate received'
+    }
+};
+
 exports.configureRoutes = (server) => {
     return server.route([
         {
             method:'POST',
             path: '/state/{timeout}',
             config: qclState
+        },
+        {
+            method:'POST',
+            path: '/mutate-grid/',
+            config: stateMutation
         }
     ])}
