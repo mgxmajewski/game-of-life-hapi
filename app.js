@@ -1,6 +1,7 @@
 'use strict';
 const Hapi = require('@hapi/hapi');
 const Connection = require('./dbConfig');
+const { User } = require('./models/User');
 const { configureRoutes } = require('./routes');
 
 const init = async () => {
@@ -12,11 +13,11 @@ const init = async () => {
     await server.start();
     await configureRoutes(server);
     console.log('Server running on %s', server.info.uri);
-    // console.log('What does server have to offer?');
-    // for (let [key, value] of Object.entries(server)) {
-    //     console.log(`${key}: ${value}`);
-    // }
 };
+
+// Connection.useModel.findAll().then(r => console.log(r))
+
+
 
 process.on('unhandledRejection', (err) => {
     console.log(err);

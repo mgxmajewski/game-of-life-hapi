@@ -1,14 +1,15 @@
+/*
 const {Sequelize} = require('sequelize');
 
-const seq = new Sequelize('game-db', 'postgres', 'password', {
-    host: 'localhost',
+const seq = new Sequelize('postgres', 'postgres', 'password', {
+    host: '172.27.120.155',
     port: '5432',
     dialect: 'postgres'
 });
 
 seq.authenticate()
     .then(
-        () =>{console.log("Database connection established");})
+        () =>{console.log("Database connecdtion established");})
     .catch(err=>
     {console.error('Connection Disrupted.', err)})
 
@@ -20,4 +21,5 @@ seq.sync()
 module.exports = {
     useModel:require('../models/User')(seq)
 }
+*/
 
