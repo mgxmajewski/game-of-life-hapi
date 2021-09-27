@@ -5,7 +5,6 @@ const { useState } = require('../helpers/useState');
 const { getLongestRow } = require("../helpers/getLongestRow");
 const { GameOfLife } = require("../helpers/game_of_life_core/gameOfLife");
 
-
 const data = JSON.stringify({
     query: `query {
   states{
@@ -24,8 +23,6 @@ const configGetGrid = {
     data : data
 };
 
-
-
 const getGridFromFetchedData = ((FetchedFromAxios) => {
     const states = FetchedFromAxios.data.data.states
     const lastIndex = states.length - 1
@@ -35,7 +32,7 @@ const getGridFromFetchedData = ((FetchedFromAxios) => {
 const parseGrid = ((parsedAxiosData) => {
     const rows = parsedAxiosData.length
     const maxColumns = getLongestRow(parsedAxiosData)
-    let aliveCellArray = {
+    let lifeInitiationData = {
         size: [maxColumns, rows],
         cells : []
     }
@@ -47,20 +44,23 @@ const parseGrid = ((parsedAxiosData) => {
                 let coords;
                 // coords as they will be retrieved backwards
                 coords = [col, row];
-                aliveCellArray.cells.push(coords)
+                lifeInitiationData.cells.push(coords)
             }
         }
     }
-    return aliveCellArray
+    return lifeInitiationData
 })
-
 
 const renderNextFrame = ((parsedGrid) => {
     const rows = parsedGrid.size[1]
     const columns = parsedGrid.size[0]
-    const state = parsedGrid.cells
-    const grid = new GameOfLife(columns, rows, state)
-    grid.initiateLife = state
+    const aliveCells = parsedGrid.cells
+    return InitiateLife(columns, rows, aliveCells)
+})
+
+const InitiateLife = ((columns, rows, aliveCells) =>{
+    const grid = new GameOfLife(columns, rows)
+    grid.initiateLife = aliveCells
     grid.updateGrid()
     return grid.cellGrid.gridView
 })
@@ -103,9 +103,18 @@ async function stateProcessor ()  {
     }
 }
 
+async function sendGrid(grid)  {
+    try {
+        const dataToPost = gridToPost(grid)
+        const configurationToPostGrid = configPostGrid(dataToPost)
+        console.log(configurationToPostGrid)
+        return axios(configurationToPostGrid)
+    } catch(error) {
+        console.log(new Error(error))
+    }
+}
 
 // Create hook to capture param from request to control interval timeout
-
 const [timeoutGetter, timeoutSetter] = useState(3000)
 
 // Create mutable interval capturing grid state in timeout interval given via request
@@ -118,7 +127,18 @@ function updateInterval () {
     }
 }
 
+const handleClickedCell = (grid, cell) => {
+    const x = cell[1]
+    const y = cell[0]
+    console.log(cell)
+    const isAlive = grid[x][y] === "#"
+    grid[x][y] = isAlive ? "_" : "#";
+    return grid
+}
+
+
 const qclState = {
+    auth: 'jwt',
     handler: function (request, h) {
         const timeOutParam = request.params.timeout
         timeoutSetter(timeOutParam)
@@ -129,10 +149,12 @@ const qclState = {
 };
 
 const stateMutation = {
+    auth: 'jwt',
     handler: function (request, h) {
-        const payload = JSON.parse(request.payload)
-        console.log(payload.cell)
-        console.log(payload.grid)
+        const payload = request.payload
+        const updatedGrid = handleClickedCell(payload.grid, payload.cell)
+        console.log(request.payload)
+        sendGrid(updatedGrid)
         return 'grid to mutate received'
     }
 };
@@ -148,5 +170,5 @@ exports.configureRoutes = (server) => {
             method:'POST',
             path: '/mutate-grid/',
             config: stateMutation
-        }
+        },
     ])}
