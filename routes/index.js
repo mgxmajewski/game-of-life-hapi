@@ -55,14 +55,31 @@ const renderNextFrame = ((parsedGrid) => {
     const rows = parsedGrid.size[1]
     const columns = parsedGrid.size[0]
     const aliveCells = parsedGrid.cells
-    return InitiateLife(columns, rows, aliveCells)
+    const grid= InitiateLife(columns, rows, aliveCells)
+    grid.updateGrid()
+    return grid.cellGrid.gridView
+})
+
+const addLastRow = ((parsedGrid) => {
+    const rows = parsedGrid.size[1] + 1
+    const columns = parsedGrid.size[0]
+    const aliveCells = parsedGrid.cells
+    const grid= InitiateLife(columns, rows, aliveCells)
+    return grid.cellGrid.gridView
+})
+
+const addLastColumn = ((parsedGrid) => {
+    const rows = parsedGrid.size[1]
+    const columns = parsedGrid.size[0] + 1
+    const aliveCells = parsedGrid.cells
+    const grid= InitiateLife(columns, rows, aliveCells)
+    return grid.cellGrid.gridView
 })
 
 const InitiateLife = ((columns, rows, aliveCells) =>{
     const grid = new GameOfLife(columns, rows)
     grid.initiateLife = aliveCells
-    grid.updateGrid()
-    return grid.cellGrid.gridView
+    return grid
 })
 
 const gridToPost= ((nextFrame) =>{
@@ -107,7 +124,7 @@ async function sendGrid(grid)  {
     try {
         const dataToPost = gridToPost(grid)
         const configurationToPostGrid = configPostGrid(dataToPost)
-        console.log(configurationToPostGrid)
+        // console.log(configurationToPostGrid)
         return axios(configurationToPostGrid)
     } catch(error) {
         console.log(new Error(error))
@@ -130,7 +147,7 @@ function updateInterval () {
 const handleClickedCell = (grid, cell) => {
     const x = cell[1]
     const y = cell[0]
-    console.log(cell)
+    // console.log(cell)
     const isAlive = grid[x][y] === "#"
     grid[x][y] = isAlive ? "_" : "#";
     return grid
@@ -153,7 +170,20 @@ const stateMutation = {
     handler: function (request, h) {
         const payload = request.payload
         const updatedGrid = handleClickedCell(payload.grid, payload.cell)
-        console.log(request.payload)
+        // console.log(request.payload)
+        sendGrid(updatedGrid)
+        return 'grid to mutate received'
+    }
+};
+
+const addLastRowConfig = {
+    auth: 'jwt',
+    handler: function (request, h) {
+        const payload = request.payload
+        // console.log(payload.grid)
+        const parsedGrid = parseGrid(payload.grid)
+        const updatedGrid = addLastRow(parsedGrid)
+        console.log(updatedGrid)
         sendGrid(updatedGrid)
         return 'grid to mutate received'
     }
@@ -171,4 +201,9 @@ exports.configureRoutes = (server) => {
             path: '/mutate-grid/',
             config: stateMutation
         },
+        {
+            method:'POST',
+            path: '/add-last-row/',
+            config: addLastRowConfig
+        }
     ])}
