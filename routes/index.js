@@ -78,7 +78,9 @@ const addLastColumn = ((parsedGrid) => {
 
 const InitiateLife = ((columns, rows, aliveCells) =>{
     const grid = new GameOfLife(columns, rows)
-    grid.initiateLife = aliveCells
+    if(aliveCells){
+        grid.initiateLife = aliveCells
+    }
     return grid
 })
 
@@ -189,6 +191,20 @@ const addLastRowConfig = {
     }
 };
 
+const initiateCleanGrid = {
+    auth: 'jwt',
+    handler: function (request, h) {
+        const payload = request.payload
+        const rows = payload.size[0]
+        const columns = payload.size[1]
+        const updatedGrid = InitiateLife(columns, rows).cellGrid.gridView
+        console.log(updatedGrid)
+        sendGrid(updatedGrid)
+        return 'grid to mutate received'
+    }
+};
+
+
 exports.configureRoutes = (server) => {
     return server.route([
         {
@@ -205,5 +221,10 @@ exports.configureRoutes = (server) => {
             method:'POST',
             path: '/add-last-row/',
             config: addLastRowConfig
+        },
+        {
+            method:'POST',
+            path: '/initiate-clean-grid/',
+            config: initiateCleanGrid
         }
     ])}
