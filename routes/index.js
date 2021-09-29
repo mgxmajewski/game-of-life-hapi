@@ -65,6 +65,7 @@ const addLastRow = ((parsedGrid) => {
     const columns = parsedGrid.size[0]
     const aliveCells = parsedGrid.cells
     const grid= InitiateLife(columns, rows, aliveCells)
+    console.log(grid.cellGrid.gridView)
     return grid.cellGrid.gridView
 })
 
@@ -73,6 +74,7 @@ const addLastColumn = ((parsedGrid) => {
     const columns = parsedGrid.size[0] + 1
     const aliveCells = parsedGrid.cells
     const grid= InitiateLife(columns, rows, aliveCells)
+    console.log(grid.cellGrid.gridView)
     return grid.cellGrid.gridView
 })
 
@@ -187,7 +189,20 @@ const addLastRowConfig = {
         const updatedGrid = addLastRow(parsedGrid)
         console.log(updatedGrid)
         sendGrid(updatedGrid)
-        return 'grid to mutate received'
+        return 'addLastRow'
+    }
+};
+
+const addLastColConfig = {
+    auth: 'jwt',
+    handler: function (request, h) {
+        const payload = request.payload
+        // console.log(payload.grid)
+        const parsedGrid = parseGrid(payload.grid)
+        const updatedGrid = addLastColumn(parsedGrid)
+        console.log(updatedGrid)
+        sendGrid(updatedGrid)
+        return 'addLastCol'
     }
 };
 
@@ -221,6 +236,11 @@ exports.configureRoutes = (server) => {
             method:'POST',
             path: '/add-last-row/',
             config: addLastRowConfig
+        },
+        {
+            method:'POST',
+            path: '/add-last-col/',
+            config: addLastColConfig
         },
         {
             method:'POST',
