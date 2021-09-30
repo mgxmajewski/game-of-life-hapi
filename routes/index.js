@@ -180,29 +180,26 @@ const stateMutation = {
     }
 };
 
+const addColOrRowHandler = (request, addHandler) => {
+    const payload = request.payload
+    const parsedGrid = parseGrid(payload.grid)
+    const updatedGrid = addHandler(parsedGrid)
+    sendGrid(updatedGrid)
+    return `handled ${addHandler}`
+}
+
 const addLastRowConfig = {
     auth: 'jwt',
     handler: function (request, h) {
-        const payload = request.payload
-        // console.log(payload.grid)
-        const parsedGrid = parseGrid(payload.grid)
-        const updatedGrid = addLastRow(parsedGrid)
-        console.log(updatedGrid)
-        sendGrid(updatedGrid)
-        return 'addLastRow'
+        return addColOrRowHandler(request, addLastRow)
     }
 };
+
 
 const addLastColConfig = {
     auth: 'jwt',
     handler: function (request, h) {
-        const payload = request.payload
-        // console.log(payload.grid)
-        const parsedGrid = parseGrid(payload.grid)
-        const updatedGrid = addLastColumn(parsedGrid)
-        console.log(updatedGrid)
-        sendGrid(updatedGrid)
-        return 'addLastCol'
+        return addColOrRowHandler(request, addLastColumn)
     }
 };
 
