@@ -78,6 +78,31 @@ const addLastColumn = ((parsedGrid) => {
     return grid.cellGrid.gridView
 })
 
+const addFirstRow = ((parsedGrid) => {
+    const rows = parsedGrid.size[1] + 1
+    const columns = parsedGrid.size[0]
+    const aliveCells = parsedGrid.cells
+    console.log(aliveCells)
+    aliveCells.forEach(coordinates => console.log(coordinates[1]++))
+    console.log(aliveCells)
+    const grid= InitiateLife(columns, rows, aliveCells)
+    console.log(grid.cellGrid.gridView)
+    return grid.cellGrid.gridView
+})
+
+const addFirstColumn = ((parsedGrid) => {
+    const rows = parsedGrid.size[1]
+    const columns = parsedGrid.size[0] + 1
+    const aliveCells = parsedGrid.cells
+    console.log(aliveCells)
+    aliveCells.forEach(coordinates => coordinates[0]++)
+    console.log(aliveCells)
+    const grid= InitiateLife(columns, rows, aliveCells)
+    console.log(grid.cellGrid.gridView)
+    return grid.cellGrid.gridView
+})
+
+
 const InitiateLife = ((columns, rows, aliveCells) =>{
     const grid = new GameOfLife(columns, rows)
     if(aliveCells){
@@ -203,6 +228,21 @@ const addLastColConfig = {
     }
 };
 
+const addFirstRowConfig = {
+    auth: 'jwt',
+    handler: function (request, h) {
+        return addColOrRowHandler(request, addFirstRow)
+    }
+};
+
+
+const addFirstColConfig = {
+    auth: 'jwt',
+    handler: function (request, h) {
+        return addColOrRowHandler(request, addFirstColumn)
+    }
+};
+
 const initiateCleanGrid = {
     auth: 'jwt',
     handler: function (request, h) {
@@ -238,6 +278,16 @@ exports.configureRoutes = (server) => {
             method:'POST',
             path: '/add-last-col/',
             config: addLastColConfig
+        },
+        {
+            method:'POST',
+            path: '/add-first-row/',
+            config: addFirstRowConfig
+        },
+        {
+            method:'POST',
+            path: '/add-first-col/',
+            config: addFirstColConfig
         },
         {
             method:'POST',
