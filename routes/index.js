@@ -31,11 +31,8 @@ const getGridFromFetchedData = ((FetchedFromAxios) => {
 
 const parseGrid = ((parsedAxiosData) => {
     const rows = parsedAxiosData.length
-    const maxColumns = getLongestRow(parsedAxiosData)
-    let lifeInitiationData = {
-        size: [maxColumns, rows],
-        cells : []
-    }
+    const columns = getLongestRow(parsedAxiosData)
+    let aliveCells = []
     for (let row = 0; row<rows; row++){
         const columns = parsedAxiosData[row].length
         for (let col = 0; col<columns; col++){
@@ -44,61 +41,59 @@ const parseGrid = ((parsedAxiosData) => {
                 let coords;
                 // coords as they will be retrieved backwards
                 coords = [col, row];
-                lifeInitiationData.cells.push(coords)
+                aliveCells.push(coords)
             }
         }
     }
-    return lifeInitiationData
+    return {columns, rows, aliveCells}
 })
 
-const renderNextFrame = ((parsedGrid) => {
-    const rows = parsedGrid.size[1]
-    const columns = parsedGrid.size[0]
-    const aliveCells = parsedGrid.cells
+
+const addRow = parsedGrid => {
+    const {columns, aliveCells} = parsedGrid
+    let {rows} = parsedGrid
+    rows++
+    return {columns, rows, aliveCells}
+}
+
+const addColumns = parsedGrid => {
+    const {rows, aliveCells} = parsedGrid
+    let {columns} = parsedGrid
+    columns++
+    return {columns, rows, aliveCells}
+}
+
+const renderNextFrame = (parsedGrid => {
+    const {rows, columns, aliveCells} = parsedGrid
     const grid= InitiateLife(columns, rows, aliveCells)
     grid.updateGrid()
     return grid.cellGrid.gridView
 })
 
 const addLastRow = ((parsedGrid) => {
-    const rows = parsedGrid.size[1] + 1
-    const columns = parsedGrid.size[0]
-    const aliveCells = parsedGrid.cells
+    const {columns, rows, aliveCells} = addRow(parsedGrid)
     const grid= InitiateLife(columns, rows, aliveCells)
     console.log(grid.cellGrid.gridView)
     return grid.cellGrid.gridView
 })
 
 const addLastColumn = ((parsedGrid) => {
-    const rows = parsedGrid.size[1]
-    const columns = parsedGrid.size[0] + 1
-    const aliveCells = parsedGrid.cells
+    const {rows, columns, aliveCells} = addColumns(parsedGrid)
     const grid= InitiateLife(columns, rows, aliveCells)
-    console.log(grid.cellGrid.gridView)
     return grid.cellGrid.gridView
 })
 
-const addFirstRow = ((parsedGrid) => {
-    const rows = parsedGrid.size[1] + 1
-    const columns = parsedGrid.size[0]
-    const aliveCells = parsedGrid.cells
-    console.log(aliveCells)
-    aliveCells.forEach(coordinates => console.log(coordinates[1]++))
-    console.log(aliveCells)
+const addFirstRow = (parsedGrid => {
+    const {columns, rows, aliveCells} = parsedGrid
+    aliveCells.forEach(coordinates => coordinates[1]++)
     const grid= InitiateLife(columns, rows, aliveCells)
-    console.log(grid.cellGrid.gridView)
     return grid.cellGrid.gridView
 })
 
-const addFirstColumn = ((parsedGrid) => {
-    const rows = parsedGrid.size[1]
-    const columns = parsedGrid.size[0] + 1
-    const aliveCells = parsedGrid.cells
-    console.log(aliveCells)
+const addFirstColumn = (parsedGrid => {
+    const {columns, rows, aliveCells} = addColumns(parsedGrid)
     aliveCells.forEach(coordinates => coordinates[0]++)
-    console.log(aliveCells)
     const grid= InitiateLife(columns, rows, aliveCells)
-    console.log(grid.cellGrid.gridView)
     return grid.cellGrid.gridView
 })
 
