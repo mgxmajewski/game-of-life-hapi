@@ -23,18 +23,18 @@ const configGetGrid = {
     data : data
 };
 
-const getGridFromFetchedData = ((FetchedFromAxios) => {
+const getGridFromFetchedData = FetchedFromAxios => {
     const states = FetchedFromAxios.data.data.states
     const lastIndex = states.length - 1
     return states[lastIndex].grid
-})
+}
 
-const renderNextFrame = (parsedGrid => {
+const renderNextFrame = parsedGrid => {
     const {rows, columns, aliveCells} = parsedGrid
     const grid= InitiateLife(columns, rows, aliveCells)
     grid.updateGrid()
     return grid.cellGrid.gridView
-})
+}
 
 const addRow = parsedGrid => {
     const {columns, aliveCells} = parsedGrid
@@ -50,26 +50,26 @@ const addColumn = parsedGrid => {
     return {columns, rows, aliveCells}
 }
 
-const addLastRow = ((parsedGrid) => {
+const addLastRow = parsedGrid => {
     const {columns, rows, aliveCells} = addRow(parsedGrid)
     const grid= InitiateLife(columns, rows, aliveCells)
     console.log(grid.cellGrid.gridView)
     return grid.cellGrid.gridView
-})
+}
 
-const addLastColumn = ((parsedGrid) => {
+const addLastColumn = parsedGrid => {
     const {rows, columns, aliveCells} = addColumn(parsedGrid)
     const grid= InitiateLife(columns, rows, aliveCells)
     return grid.cellGrid.gridView
-})
+}
 
-const moveAliveCellsRight = (parsedGrid) => {
+const moveAliveCellsRight = parsedGrid => {
     const {columns, rows, aliveCells} = parsedGrid
     aliveCells.forEach(coordinates => coordinates[0]++)
     return {columns, rows, aliveCells}
 }
 
-const moveAliveCellsDown = (parsedGrid) => {
+const moveAliveCellsDown = parsedGrid => {
     const {columns, rows, aliveCells} = parsedGrid
     aliveCells.forEach(coordinates => coordinates[1]++)
     return {columns, rows, aliveCells}
@@ -90,13 +90,13 @@ const addFirstColumn = parsedGrid => {
     return grid.cellGrid.gridView
 }
 
-const InitiateLife = ((columns, rows, aliveCells) =>{
+const InitiateLife = (columns, rows, aliveCells) =>{
     const grid = new GameOfLife(columns, rows)
     grid.initiateLife = aliveCells
     return grid
-})
+}
 
-const gridToPost= ((nextFrame) =>{
+const gridToPost= nextFrame =>{
     return JSON.stringify({
         query: `mutation ($grid: [[String]]!){
   postState(
@@ -106,9 +106,9 @@ const gridToPost= ((nextFrame) =>{
 }`,
         variables: {"grid":nextFrame}
     });
-})
+}
 
-const configPostGrid = ((gridToPost) => {
+const configPostGrid = gridToPost => {
     return {
         method: 'post',
         url: 'http://localhost:4000/',
@@ -117,7 +117,7 @@ const configPostGrid = ((gridToPost) => {
         },
         data: gridToPost
     }
-});
+};
 
 async function stateProcessor ()  {
     try {
