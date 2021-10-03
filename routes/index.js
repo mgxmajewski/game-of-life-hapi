@@ -75,18 +75,20 @@ const moveAliveCellsDown = (parsedGrid) => {
     return {columns, rows, aliveCells}
 }
 
-const addFirstRow = (parsedGrid => {
-    const {columns, rows, aliveCells} = moveAliveCellsDown(addRow(parsedGrid))
+const addFirstRow = parsedGrid => {
+    const gridWithAddedRow = addRow(parsedGrid)
+    const {columns, rows, aliveCells} = moveAliveCellsDown(gridWithAddedRow)
     console.log({columns, rows, aliveCells})
     const grid= InitiateLife(columns, rows, aliveCells)
     return grid.cellGrid.gridView
-})
+}
 
-const addFirstColumn = (parsedGrid => {
-    const {columns, rows, aliveCells} = moveAliveCellsRight(addColumn(parsedGrid))
+const addFirstColumn = parsedGrid => {
+    const gridWithAddedColumn = addColumn(parsedGrid)
+    const {columns, rows, aliveCells} = moveAliveCellsRight(gridWithAddedColumn)
     const grid= InitiateLife(columns, rows, aliveCells)
     return grid.cellGrid.gridView
-})
+}
 
 const InitiateLife = ((columns, rows, aliveCells) =>{
     const grid = new GameOfLife(columns, rows)
