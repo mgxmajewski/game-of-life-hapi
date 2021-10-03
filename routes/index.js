@@ -2,8 +2,8 @@
 const joi = require('joi');
 const axios = require('axios');
 const { useState } = require('../helpers/useState');
-const { getLongestRow } = require("../helpers/getLongestRow");
 const { GameOfLife } = require("../helpers/game_of_life_core/gameOfLife");
+const { parseGrid } = require("../helpers/parseGrid");
 
 const data = JSON.stringify({
     query: `query {
@@ -29,23 +29,11 @@ const getGridFromFetchedData = ((FetchedFromAxios) => {
     return states[lastIndex].grid
 })
 
-const parseGrid = ((parsedAxiosData) => {
-    const rows = parsedAxiosData.length
-    const columns = getLongestRow(parsedAxiosData)
-    let aliveCells = []
-    for (let row = 0; row<rows; row++){
-        const columns = parsedAxiosData[row].length
-        for (let col = 0; col<columns; col++){
-            const currentCell = parsedAxiosData[row][col]
-            if( currentCell === '#'){
-                let coords;
-                // coords as they will be retrieved backwards
-                coords = [col, row];
-                aliveCells.push(coords)
-            }
-        }
-    }
-    return {columns, rows, aliveCells}
+const renderNextFrame = (parsedGrid => {
+    const {rows, columns, aliveCells} = parsedGrid
+    const grid= InitiateLife(columns, rows, aliveCells)
+    grid.updateGrid()
+    return grid.cellGrid.gridView
 })
 
 const addRow = parsedGrid => {
