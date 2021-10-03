@@ -48,7 +48,6 @@ const parseGrid = ((parsedAxiosData) => {
     return {columns, rows, aliveCells}
 })
 
-
 const addRow = parsedGrid => {
     const {columns, aliveCells} = parsedGrid
     let {rows} = parsedGrid
@@ -56,19 +55,12 @@ const addRow = parsedGrid => {
     return {columns, rows, aliveCells}
 }
 
-const addColumns = parsedGrid => {
+const addColumn = parsedGrid => {
     const {rows, aliveCells} = parsedGrid
     let {columns} = parsedGrid
     columns++
     return {columns, rows, aliveCells}
 }
-
-const renderNextFrame = (parsedGrid => {
-    const {rows, columns, aliveCells} = parsedGrid
-    const grid= InitiateLife(columns, rows, aliveCells)
-    grid.updateGrid()
-    return grid.cellGrid.gridView
-})
 
 const addLastRow = ((parsedGrid) => {
     const {columns, rows, aliveCells} = addRow(parsedGrid)
@@ -78,31 +70,39 @@ const addLastRow = ((parsedGrid) => {
 })
 
 const addLastColumn = ((parsedGrid) => {
-    const {rows, columns, aliveCells} = addColumns(parsedGrid)
+    const {rows, columns, aliveCells} = addColumn(parsedGrid)
     const grid= InitiateLife(columns, rows, aliveCells)
     return grid.cellGrid.gridView
 })
 
-const addFirstRow = (parsedGrid => {
+const moveAliveCellsRight = (parsedGrid) => {
+    const {columns, rows, aliveCells} = parsedGrid
+    aliveCells.forEach(coordinates => coordinates[0]++)
+    return {columns, rows, aliveCells}
+}
+
+const moveAliveCellsDown = (parsedGrid) => {
     const {columns, rows, aliveCells} = parsedGrid
     aliveCells.forEach(coordinates => coordinates[1]++)
+    return {columns, rows, aliveCells}
+}
+
+const addFirstRow = (parsedGrid => {
+    const {columns, rows, aliveCells} = moveAliveCellsDown(addRow(parsedGrid))
+    console.log({columns, rows, aliveCells})
     const grid= InitiateLife(columns, rows, aliveCells)
     return grid.cellGrid.gridView
 })
 
 const addFirstColumn = (parsedGrid => {
-    const {columns, rows, aliveCells} = addColumns(parsedGrid)
-    aliveCells.forEach(coordinates => coordinates[0]++)
+    const {columns, rows, aliveCells} = moveAliveCellsRight(addColumn(parsedGrid))
     const grid= InitiateLife(columns, rows, aliveCells)
     return grid.cellGrid.gridView
 })
 
-
 const InitiateLife = ((columns, rows, aliveCells) =>{
     const grid = new GameOfLife(columns, rows)
-    if(aliveCells){
-        grid.initiateLife = aliveCells
-    }
+    grid.initiateLife = aliveCells
     return grid
 })
 
@@ -241,10 +241,9 @@ const addFirstColConfig = {
 const initiateCleanGrid = {
     auth: 'jwt',
     handler: function (request, h) {
-        const payload = request.payload
-        const rows = payload.size[0]
-        const columns = payload.size[1]
-        const updatedGrid = InitiateLife(columns, rows).cellGrid.gridView
+        const {payload} = request
+        const {columns, rows, aliveCells} = payload
+        const updatedGrid = InitiateLife(columns, rows, aliveCells).cellGrid.gridView
         console.log(updatedGrid)
         sendGrid(updatedGrid)
         return 'grid to mutate received'
