@@ -2,25 +2,8 @@
 const Hapi = require('@hapi/hapi');
 // const Connection = require('./dbConfig');
 // const { User } = require('./models/User');
-
 const { configureRoutes } = require('./routes');
-
-const people = { // our "users database"
-    1: {
-        id: 1,
-        name: 'Jen Jones'
-    }
-};
-const validate = async function (decoded, request, h) {
-
-    // do your checks to see if the person is valid
-    if (!people[decoded.id]) {
-        return { isValid: false };
-    }
-    else {
-        return { isValid: true };
-    }
-};
+const Auth = require("./auth");
 
 const init = async () => {
 
@@ -37,10 +20,10 @@ const init = async () => {
     await server.register(require('./auth'));
     server.auth.strategy('jwt', 'jwt',
         { key: 'NeverShareYourSecret', // Never Share your secret key
-            validate  // validate function defined above
+            validate : Auth.validate  // validate function defined above
         });
 
-    server.auth.default('jwt');
+    // server.auth.default('jwt');
 
     await server.start();
 
