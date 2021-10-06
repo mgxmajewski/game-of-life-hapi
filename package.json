@@ -18,6 +18,7 @@
     "jest-given-when-then": "^1.0.1"
   },
   "dependencies": {
+    "@hapi/eslint-plugin": "^5.1.0",
     "@hapi/hapi": "^20.1.5",
     "axios": "^0.21.1",
     "graphi": "^9.0.0",
