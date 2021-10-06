@@ -1,7 +1,5 @@
 'use strict';
 const Hapi = require('@hapi/hapi');
-// const Connection = require('./dbConfig');
-// const { User } = require('./models/User');
 const { configureRoutes } = require('./routes');
 const Auth = require("./auth");
 
@@ -31,7 +29,6 @@ const init = async () => {
     console.log('Server running on %s', server.info.uri);
 };
 
-// Connection.useModel.findAll().then(r => console.log(r))
 process.on('unhandledRejection', (err) => {
     console.log(err);
     process.exit(1);
