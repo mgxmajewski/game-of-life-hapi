@@ -1,15 +1,19 @@
+'use strict';
+
 class Cell {
     /**
      * @param x - coordinate (column)
      * @param y - coordinate (row)
      */
     constructor(x, y) {
+
         this.x = x;
         this.y = y;
         this.alive = false;
     }
 
     giveLife() {
+
         this.alive = true;
     }
 
@@ -18,7 +22,8 @@ class Cell {
      * @return {boolean}
      */
     get isAlive() {
-        return this.alive
+
+        return this.alive;
     }
 
     /**
@@ -26,7 +31,8 @@ class Cell {
      * @return {string}
      */
     get position() {
-        return `position-${this.x}-${this.y}`
+
+        return `position-${this.x}-${this.y}`;
     }
 
     /**
@@ -34,7 +40,8 @@ class Cell {
      * @return {number}
      */
     get xValue() {
-        return this.x
+
+        return this.x;
     }
 
     /**
@@ -42,7 +49,9 @@ class Cell {
      * @return {number}
      */
     get yValue() {
-        return this.y
+
+        return this.y;
     }
 }
-module.exports = {Cell}
+
+module.exports = { Cell };
