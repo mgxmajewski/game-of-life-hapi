@@ -1,4 +1,6 @@
-const {Sequelize} = require('sequelize');
+'use strict';
+
+const { Sequelize } = require('sequelize');
 
 const seq = new Sequelize('postgres', 'postgres', 'password', {
     host: 'ubuntu2004.wsl',
@@ -7,14 +9,19 @@ const seq = new Sequelize('postgres', 'postgres', 'password', {
 });
 
 seq.authenticate()
-    .then(() => {console.log('Database connection established');})
-    .catch(err => {console.error('Connection Disrupted.', err)})
+    .then( () => {
+
+        console.log('Database connection established');
+    })
+    .catch( (err) => {
+
+        console.error('Connection Disrupted.', err);
+    });
 
 seq.sync()
-    .then(() => console.log('synced successfully'))
-
+    .then(() => console.log('synced successfully'));
 
 module.exports = {
-    useModel:require('../models/User')(seq)
-}
+    useModel: require('../models/User')(seq)
+};
 
