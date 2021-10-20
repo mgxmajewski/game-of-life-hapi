@@ -4,7 +4,7 @@ const Axios = require('axios');
 const { useState } = require('../helpers/useState');
 const { GameOfLife } = require('../helpers/game_of_life_core/gameOfLife');
 const { parseGrid } = require('../helpers/parseGrid');
-const { fetchedGrid } = require('../grid_handlers/fetchGridHandler');
+const { fetchGrid } = require('../grid_handlers/fetchGridHandler');
 
 const renderNextFrame = (parsedGrid) => {
 
@@ -108,9 +108,10 @@ const configPostGrid = (gridJSON) => {
     };
 };
 
-const stateProcessor = () => {
+const stateProcessor = async () => {
 
     try {
+        const fetchedGrid = await fetchGrid();
         const parsedGrid = parseGrid(fetchedGrid);
         const nextFrame = renderNextFrame(parsedGrid);
         const dataToPost = gridToPost(nextFrame);

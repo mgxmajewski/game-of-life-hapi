@@ -27,8 +27,9 @@ const getGridFromFetchedData = (FetchedFromAxios) => {
     return states[lastIndex].grid;
 };
 
-exports.fetchedGrid = async () => {
+exports.fetchGrid = async () => {
 
     const FetchedFromAxios = await Axios(configGetGrid);
     return getGridFromFetchedData(FetchedFromAxios);
 };
+
