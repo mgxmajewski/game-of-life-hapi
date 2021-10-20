@@ -7,6 +7,7 @@ const { fetchGrid } = require('../grid_utils/fetchGridHandler');
 const { InitiateGrid } = require('../grid_utils/initiategrid');
 const { renderNextFrame } = require('../grid_utils/renderNextFrame');
 const { configuredPost } = require('../grid_utils/postGridConfig');
+const {updateInterval} = require("../grid_utils/intervalHandler");
 
 const addRow = (parsedGrid) => {
 
@@ -96,20 +97,6 @@ const sendGrid = (grid) => {
     }
 };
 
-// Create hook to capture param from request to control interval timeout
-const [timeoutGetter, timeoutSetter] = useState(3000);
-
-// Create mutable interval capturing grid state in timeout interval given via request
-let interval;
-const updateInterval = () => {
-
-    const timeOut = timeoutGetter();
-    clearInterval(interval);
-    if (timeOut !== '101') {
-        interval = setInterval(stateProcessor, timeOut);
-    }
-};
-
 const handleClickedCell = (grid, cell) => {
 
     const x = cell[1];
@@ -120,13 +107,16 @@ const handleClickedCell = (grid, cell) => {
     return grid;
 };
 
+// Create hook to capture param from request to control interval timeout
+const [timeoutGetter, timeoutSetter] = useState(3000);
+
 const qclState = {
     auth: 'jwt',
     handler: function (request, h) {
 
         const timeOutParam = request.params.timeout;
         timeoutSetter(timeOutParam);
-        updateInterval();
+        updateInterval(stateProcessor, timeoutGetter());
         console.log(h.request.params.timeout);
         return 'success';
     }
