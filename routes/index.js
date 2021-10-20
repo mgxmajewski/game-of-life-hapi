@@ -4,15 +4,8 @@ const Axios = require('axios');
 const { useState } = require('../helpers/useState');
 const { parseGrid } = require('../helpers/parseGrid');
 const { fetchGrid } = require('../grid_handlers/fetchGridHandler');
-const { InitiateGrid } = require('../grid_handlers/initiateGrid');
-
-const renderNextFrame = (parsedGrid) => {
-
-    const { rows, columns, aliveCells } = parsedGrid;
-    const grid = InitiateGrid(columns, rows, aliveCells);
-    grid.updateGrid();
-    return grid.cellGrid.gridView;
-};
+const { InitiateGrid } = require('../grid_handlers/initiategrid');
+const { renderNextFrame } = require('../grid_handlers/renderNextFrame');
 
 const addRow = (parsedGrid) => {
 
