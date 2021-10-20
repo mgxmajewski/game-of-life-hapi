@@ -3,10 +3,10 @@
 const Axios = require('axios');
 const { useState } = require('../helpers/useState');
 const { parseGrid } = require('../helpers/parseGrid');
-const { fetchGrid } = require('../grid_handlers/fetchGridHandler');
-const { InitiateGrid } = require('../grid_handlers/initiategrid');
-const { renderNextFrame } = require('../grid_handlers/renderNextFrame');
-const { configuredPost } = require('../grid_handlers/postGridConfig');
+const { fetchGrid } = require('../grid_utils/fetchGridHandler');
+const { InitiateGrid } = require('../grid_utils/initiategrid');
+const { renderNextFrame } = require('../grid_utils/renderNextFrame');
+const { configuredPost } = require('../grid_utils/postGridConfig');
 
 const addRow = (parsedGrid) => {
 
