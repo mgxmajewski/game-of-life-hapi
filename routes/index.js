@@ -6,6 +6,7 @@ const { parseGrid } = require('../helpers/parseGrid');
 const { fetchGrid } = require('../grid_handlers/fetchGridHandler');
 const { InitiateGrid } = require('../grid_handlers/initiategrid');
 const { renderNextFrame } = require('../grid_handlers/renderNextFrame');
+const { configuredPost } = require('../grid_handlers/postGridConfig');
 
 const addRow = (parsedGrid) => {
 
@@ -69,41 +70,15 @@ const addFirstColumn = (parsedGrid) => {
     return grid.cellGrid.gridView;
 };
 
-const gridToPost = (nextFrame) => {
-
-    return JSON.stringify({
-        query: `mutation ($grid: [[String]]!){
-  postState(
-    user: "MM", 
-    grid: $grid
-    )
-}`,
-        variables: { 'grid': nextFrame }
-    });
-};
-
-const configPostGrid = (gridJSON) => {
-
-    return {
-        method: 'post',
-        url: 'http://localhost:4000/',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        data: gridJSON
-    };
-};
-
 const stateProcessor = async () => {
 
     try {
         const fetchedGrid = await fetchGrid();
         const parsedGrid = parseGrid(fetchedGrid);
         const nextFrame = renderNextFrame(parsedGrid);
-        const dataToPost = gridToPost(nextFrame);
-        const configurationToPostGrid = configPostGrid(dataToPost);
+        const gridPostRequest = configuredPost(nextFrame);
         console.log(fetchedGrid);
-        return Axios(configurationToPostGrid);
+        return Axios(gridPostRequest);
     }
     catch (error) {
         console.log(new Error(error));
@@ -113,10 +88,8 @@ const stateProcessor = async () => {
 const sendGrid = (grid) => {
 
     try {
-        const dataToPost = gridToPost(grid);
-        const configurationToPostGrid = configPostGrid(dataToPost);
-        // console.log(configurationToPostGrid)
-        return Axios(configurationToPostGrid);
+        const gridPostRequest = configuredPost(grid);
+        return Axios(gridPostRequest);
     }
     catch (error) {
         console.log(new Error(error));
