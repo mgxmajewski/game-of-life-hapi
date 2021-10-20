@@ -4,31 +4,7 @@ const Axios = require('axios');
 const { useState } = require('../helpers/useState');
 const { GameOfLife } = require('../helpers/game_of_life_core/gameOfLife');
 const { parseGrid } = require('../helpers/parseGrid');
-
-const data = JSON.stringify({
-    query: `query {
-  states{
-    grid
-  } 
-}`,
-    variables: {}
-});
-
-const configGetGrid = {
-    method: 'post',
-    url: 'http://localhost:4000/',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    data
-};
-
-const getGridFromFetchedData = (FetchedFromAxios) => {
-
-    const states = FetchedFromAxios.data.data.states;
-    const lastIndex = states.length - 1;
-    return states[lastIndex].grid;
-};
+const { fetchedGrid } = require('../grid_handlers/fetchGridHandler');
 
 const renderNextFrame = (parsedGrid) => {
 
@@ -132,16 +108,14 @@ const configPostGrid = (gridJSON) => {
     };
 };
 
-const stateProcessor = async () => {
+const stateProcessor = () => {
 
     try {
-        const FetchedFromAxios = await Axios(configGetGrid);
-        const currentGrid = await getGridFromFetchedData(FetchedFromAxios);
-        const parsedGrid = parseGrid(currentGrid);
+        const parsedGrid = parseGrid(fetchedGrid);
         const nextFrame = renderNextFrame(parsedGrid);
         const dataToPost = gridToPost(nextFrame);
         const configurationToPostGrid = configPostGrid(dataToPost);
-        console.log(currentGrid);
+        console.log(fetchedGrid);
         return Axios(configurationToPostGrid);
     }
     catch (error) {
