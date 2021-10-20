@@ -2,14 +2,14 @@
 
 const Axios = require('axios');
 const { useState } = require('../helpers/useState');
-const { GameOfLife } = require('../helpers/game_of_life_core/gameOfLife');
 const { parseGrid } = require('../helpers/parseGrid');
 const { fetchGrid } = require('../grid_handlers/fetchGridHandler');
+const { InitiateGrid } = require('../grid_handlers/initiateGrid');
 
 const renderNextFrame = (parsedGrid) => {
 
     const { rows, columns, aliveCells } = parsedGrid;
-    const grid = InitiateLife(columns, rows, aliveCells);
+    const grid = InitiateGrid(columns, rows, aliveCells);
     grid.updateGrid();
     return grid.cellGrid.gridView;
 };
@@ -33,7 +33,7 @@ const addColumn = (parsedGrid) => {
 const addLastRow = (parsedGrid) => {
 
     const { columns, rows, aliveCells } = addRow(parsedGrid);
-    const grid = InitiateLife(columns, rows, aliveCells);
+    const grid = InitiateGrid(columns, rows, aliveCells);
     console.log(grid.cellGrid.gridView);
     return grid.cellGrid.gridView;
 };
@@ -41,7 +41,7 @@ const addLastRow = (parsedGrid) => {
 const addLastColumn = (parsedGrid) => {
 
     const { rows, columns, aliveCells } = addColumn(parsedGrid);
-    const grid = InitiateLife(columns, rows, aliveCells);
+    const grid = InitiateGrid(columns, rows, aliveCells);
     return grid.cellGrid.gridView;
 };
 
@@ -64,7 +64,7 @@ const addFirstRow = (parsedGrid) => {
     const gridWithAddedRow = addRow(parsedGrid);
     const { columns, rows, aliveCells } = moveAliveCellsDown(gridWithAddedRow);
     console.log({ columns, rows, aliveCells });
-    const grid = InitiateLife(columns, rows, aliveCells);
+    const grid = InitiateGrid(columns, rows, aliveCells);
     return grid.cellGrid.gridView;
 };
 
@@ -72,15 +72,8 @@ const addFirstColumn = (parsedGrid) => {
 
     const gridWithAddedColumn = addColumn(parsedGrid);
     const { columns, rows, aliveCells } = moveAliveCellsRight(gridWithAddedColumn);
-    const grid = InitiateLife(columns, rows, aliveCells);
+    const grid = InitiateGrid(columns, rows, aliveCells);
     return grid.cellGrid.gridView;
-};
-
-const InitiateLife = (columns, rows, aliveCells) => {
-
-    const grid = new GameOfLife(columns, rows);
-    grid.initiateLife = aliveCells;
-    return grid;
 };
 
 const gridToPost = (nextFrame) => {
@@ -232,7 +225,7 @@ const initiateCleanGrid = {
 
         const { payload } = request;
         const { columns, rows, aliveCells } = payload;
-        const updatedGrid = InitiateLife(columns, rows, aliveCells).cellGrid.gridView;
+        const updatedGrid = InitiateGrid(columns, rows, aliveCells).cellGrid.gridView;
         console.log(updatedGrid);
         sendGrid(updatedGrid);
         return 'grid to mutate received';
