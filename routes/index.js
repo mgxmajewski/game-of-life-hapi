@@ -2,7 +2,7 @@
 
 const Axios = require('axios');
 const { useState } = require('../helpers/useState');
-const { parseGrid } = require('../helpers/parseGrid');
+const { parseGrid } = require('../grid_utils/parseGrid');
 const { fetchGrid } = require('../grid_utils/fetchGridHandler');
 const { InitiateGrid } = require('../grid_utils/initiategrid');
 const { renderNextFrame } = require('../grid_utils/renderNextFrame');
