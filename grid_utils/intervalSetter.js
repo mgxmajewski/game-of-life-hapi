@@ -2,7 +2,7 @@
 
 let interval;
 /**
- * @param {callback} cb - function which will be invoked in interval.
+ * @param {function(): Promise<void>} cb - function which will be invoked in interval.
  * @param {number} timeOut - length of time interval given in milliseconds.
  */
 exports.updateInterval = (cb, timeOut) => {

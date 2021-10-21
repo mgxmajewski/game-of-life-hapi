@@ -2,11 +2,11 @@
 
 const { useState } = require('../helpers/useState');
 const { parseGrid } = require('../grid_utils/parseGrid');
-const { fetchGrid } = require('../grid_utils/fetchGridHandler');
 const { InitiateGrid } = require('../grid_utils/initiategrid');
-const { renderNextFrame } = require('../grid_utils/renderNextFrame');
 const { sendGrid } = require('../grid_utils/sendGridHandler');
 const { updateInterval } = require('../grid_utils/intervalSetter');
+const { gridRefreshHandler } = require('../grid_utils/refreshGridHandler');
+const { handleClickedCell } = require('../grid_utils/clickCellHandler');
 
 const addRow = (parsedGrid) => {
 
@@ -70,29 +70,6 @@ const addFirstColumn = (parsedGrid) => {
     return grid.cellGrid.gridView;
 };
 
-const stateProcessor = async () => {
-
-    try {
-        const fetchedGrid = await fetchGrid();
-        const parsedGrid = parseGrid(fetchedGrid);
-        const nextFrame = renderNextFrame(parsedGrid);
-        sendGrid(nextFrame);
-    }
-    catch (error) {
-        console.log(new Error(error));
-    }
-};
-
-const handleClickedCell = (grid, cell) => {
-
-    const x = cell[1];
-    const y = cell[0];
-    // console.log(cell)
-    const isAlive = grid[x][y] === '#';
-    grid[x][y] = isAlive ? '_' : '#';
-    return grid;
-};
-
 // Create hook to capture param from request to control interval timeout
 const [timeoutGetter, timeoutSetter] = useState(3000);
 
@@ -102,7 +79,7 @@ const qclState = {
 
         const timeOutParam = request.params.timeout;
         timeoutSetter(timeOutParam);
-        updateInterval(stateProcessor, timeoutGetter());
+        updateInterval(gridRefreshHandler, timeoutGetter());
         console.log(h.request.params.timeout);
         return 'success';
     }
