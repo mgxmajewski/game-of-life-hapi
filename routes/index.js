@@ -1,13 +1,12 @@
 'use strict';
 
-const Axios = require('axios');
 const { useState } = require('../helpers/useState');
 const { parseGrid } = require('../grid_utils/parseGrid');
 const { fetchGrid } = require('../grid_utils/fetchGridHandler');
 const { InitiateGrid } = require('../grid_utils/initiategrid');
 const { renderNextFrame } = require('../grid_utils/renderNextFrame');
-const { configuredPost } = require('../grid_utils/postGridConfig');
-const {updateInterval} = require("../grid_utils/intervalHandler");
+const { sendGrid } = require('../grid_utils/sendGridHandler');
+const { updateInterval } = require('../grid_utils/intervalHandler');
 
 const addRow = (parsedGrid) => {
 
@@ -77,20 +76,7 @@ const stateProcessor = async () => {
         const fetchedGrid = await fetchGrid();
         const parsedGrid = parseGrid(fetchedGrid);
         const nextFrame = renderNextFrame(parsedGrid);
-        const gridPostRequest = configuredPost(nextFrame);
-        console.log(fetchedGrid);
-        return Axios(gridPostRequest);
-    }
-    catch (error) {
-        console.log(new Error(error));
-    }
-};
-
-const sendGrid = (grid) => {
-
-    try {
-        const gridPostRequest = configuredPost(grid);
-        return Axios(gridPostRequest);
+        sendGrid(nextFrame);
     }
     catch (error) {
         console.log(new Error(error));

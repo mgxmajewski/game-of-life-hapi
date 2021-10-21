@@ -1,5 +1,7 @@
 'use strict';
 
+const Axios = require('axios');
+
 const gridToPost = (grid) => {
 
     return JSON.stringify({
@@ -25,8 +27,19 @@ const configPostGrid = (gridJSON) => {
     };
 };
 
-exports.configuredPost = (nextFrame) => {
+const pushConfiguredGrid = (gridToSend) => {
 
-    const dataToPost = gridToPost(nextFrame);
-    return configPostGrid(dataToPost);
+    try {
+        const dataToPost = gridToPost(gridToSend);
+        const gridPostRequest = configPostGrid(dataToPost);
+        return Axios(gridPostRequest);
+    }
+    catch (error) {
+        console.log(new Error(error));
+    }
+};
+
+exports.sendGrid = (gridToSend) => {
+
+    pushConfiguredGrid(gridToSend);
 };
