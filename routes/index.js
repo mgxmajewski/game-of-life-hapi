@@ -6,7 +6,7 @@ const { fetchGrid } = require('../grid_utils/fetchGridHandler');
 const { InitiateGrid } = require('../grid_utils/initiategrid');
 const { renderNextFrame } = require('../grid_utils/renderNextFrame');
 const { sendGrid } = require('../grid_utils/sendGridHandler');
-const { updateInterval } = require('../grid_utils/intervalHandler');
+const { updateInterval } = require('../grid_utils/intervalSetter');
 
 const addRow = (parsedGrid) => {
 
