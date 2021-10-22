@@ -85,15 +85,15 @@ const qclState = {
     }
 };
 
-const stateMutation = {
+const clickedCellHandlerConfig = {
     auth: 'jwt',
     handler: function (request, h) {
 
-        const payload = request.payload;
-        const updatedGrid = handleClickedCell(payload.grid, payload.cell);
+        const { cell, grid } = request.payload;
+        const updatedGrid = handleClickedCell(grid, cell);
         // console.log(request.payload)
         sendGrid(updatedGrid);
-        return 'grid to mutate received';
+        return 'changed clicked cell state';
     }
 };
 
@@ -162,7 +162,7 @@ exports.configureRoutes = (server) => {
         {
             method: 'POST',
             path: '/mutate-grid/',
-            config: stateMutation
+            config: clickedCellHandlerConfig
         },
         {
             method: 'POST',
