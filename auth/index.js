@@ -1,6 +1,6 @@
 'use strict';
 
-const Connection = require('../dbConfig');
+const Connection = require('../model');
 
 const authPlugin = {
     register: function (server, options) {
