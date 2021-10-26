@@ -1,7 +1,7 @@
 'use strict';
 
 const { Model, DataTypes } = require('sequelize');
-const bcrypt = require('bcrypt');
+const Bcrypt = require('bcrypt');
 
 module.exports = (sequelize) => {
 
@@ -38,6 +38,16 @@ module.exports = (sequelize) => {
         password: {
             type: DataTypes.STRING, // set a virtual field
             allowNull: false,
+            timestamps: false,
+            hooks: {
+                beforeCreate: (user, options) => {
+
+                    {
+                        user.password = user.password && user.password !== '' ? Bcrypt.hashSync(user.password, 10) : '';
+                        console.log('Before Creating The User');
+                    }
+                }
+            },
             validate: {
                 notNull: {
                     msg: 'A password is required'
