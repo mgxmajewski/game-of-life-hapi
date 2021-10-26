@@ -2,11 +2,22 @@
 
 const { Sequelize } = require('sequelize');
 
-const seq = new Sequelize('postgres', 'postgres', 'password', {
-    host: 'ubuntu2004.wsl',
-    port: '5432',
-    dialect: 'postgres'
-});
+const Config = require('../config');
+
+const seq = new Sequelize(Config.DbConfig.DEVELOPMENT.DB_NAME,
+    Config.DbConfig.DEVELOPMENT.DB_USER,
+    Config.DbConfig.DEVELOPMENT.DB_PASS,
+    {
+        host: Config.DbConfig.DEVELOPMENT.DB_HOST,
+        port: Config.DbConfig.DEVELOPMENT.DB_PORT,
+        dialect: Config.DbConfig.DEVELOPMENT.DIALECT,
+        pool: {
+            max: 50,
+            min: 0,
+            idle: 10000
+        }
+    }
+);
 
 seq.authenticate()
     .then( () => {
