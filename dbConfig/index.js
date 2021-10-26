@@ -22,6 +22,6 @@ seq.sync()
     .then(() => console.log('synced successfully'));
 
 module.exports = {
-    useModel: require('../models/User')(seq)
+    useModel: require('../model/User')(seq)
 };
 
