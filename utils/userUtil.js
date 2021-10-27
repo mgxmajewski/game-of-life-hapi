@@ -67,7 +67,24 @@ const findUsers = async (firstNameP, emailP) => {
     return { listUsers };
 };
 
+const findPk = async (pk) => {
+
+    console.log('Inside utils::userUtil.js::fetchUsers');
+    let listUsers = {};
+    try {
+        listUsers = await User.findByPk(pk);
+
+    }
+    catch (err) {
+        console.error(err);
+        throw (err);
+    }
+
+    return { listUsers };
+};
+
 module.exports = {
     fetchUsers,
-    findUsers
+    findUsers,
+    findPk
 };
