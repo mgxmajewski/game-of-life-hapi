@@ -17,7 +17,7 @@
     "eslint": "^7.32.0",
     "jest": "^26.6.3",
     "jest-given-when-then": "^1.0.1",
-    "sequelize-mock": "^0.10.2"
+    "sequelize-mock-v5": "^1.2.4"
   },
   "dependencies": {
     "@hapi/eslint-plugin": "^5.1.0",
