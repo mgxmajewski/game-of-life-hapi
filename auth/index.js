@@ -7,7 +7,7 @@ const authPlugin = {
 
         module.exports.validate = async function (decoded, request, h) {
             // do your checks to see if the person is valid
-            if (!await Connection.useModel.findByPk(decoded.id)) {
+            if (!await Connection.usersModel.findByPk(decoded.id)) {
                 return { isValid: false };
             }
 
