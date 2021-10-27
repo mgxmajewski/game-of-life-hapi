@@ -1,7 +1,8 @@
 'use strict';
 
 const {
-    fetchUsers
+    fetchUsers,
+    findUsers
 } = require('./userUtil');
 
 jest.mock('../model/User', () => () => {
@@ -22,8 +23,15 @@ describe('UserUtil', () => {
     test('should check if fetchUsers returns data', async () => {
         // Given
         const testFetch = await fetchUsers();
-        console.log(testFetch.listUsers);
         // Then
         expect(testFetch).not.toBe(undefined);
+    });
+
+    test('should return given user', async () => {
+        // Given
+        const testFindUsers = await findUsers('MM','');
+        console.log(testFindUsers);
+        // Then
+        expect(testFindUsers).not.toBe(undefined);
     });
 });
