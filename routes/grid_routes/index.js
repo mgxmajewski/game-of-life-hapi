@@ -1,12 +1,18 @@
 'use strict';
 
 const { useState } = require('../../helpers/useState');
-const { InitiateGrid } = require('../../grid_utils/initiateGrid');
-const { sendGrid } = require('../../grid_utils/sendGridHandler');
-const { updateInterval } = require('../../grid_utils/intervalSetter');
-const { gridRefreshHandler } = require('../../grid_utils/refreshGridHandler');
-const { handleClickedCell } = require('../../grid_utils/clickCellHandler');
-const { addLastRow, addLastColumn, addFirstRow, addFirstColumn, addColOrRowHandler } = require('../../grid_utils/changeGameSizeHandler');
+const {
+    InitiateGrid,
+    sendGrid,
+    updateInterval,
+    gridRefreshHandler,
+    handleClickedCell,
+    addLastRow,
+    addLastColumn,
+    addFirstRow,
+    addFirstColumn,
+    addColOrRowHandler
+} = require('../../grid_utils');
 
 
 // Create hook to capture param from request to control interval timeout
