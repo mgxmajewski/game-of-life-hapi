@@ -3,7 +3,7 @@
 const {
     fetchUsers,
     findUsers,
-    findPk,
+    fetchUserByPk,
     registerUser
 } = require('./userUtil');
 
@@ -71,8 +71,9 @@ describe('UserUtil', () => {
 
     test('should return byPK', async () => {
         // Given
-        const testFindUsers = await findPk(2);
-        const result = testFindUsers.listUsers.dataValues.userName;
+        const testFindByPk = await fetchUserByPk(2);
+        console.log(testFindByPk);
+        const result = testFindByPk.dataValues.userName;
         // Then
         expect(result).toBe('pk Found');
     });

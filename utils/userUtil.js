@@ -67,20 +67,14 @@ const findUsers = async (firstNameP, emailP) => {
     return { listUsers };
 };
 
-const findPk = async (pk) => {
+const fetchUserByPk = async (pk) => {
 
-    console.log('Inside utils::userUtil.js::fetchUsers');
-    let listUsers = {};
-    try {
-        listUsers = await User.findByPk(pk);
-
-    }
-    catch (err) {
-        console.error(err);
-        throw (err);
+    const userById = await User.findByPk(pk);
+    if (userById === null) {
+        return null;
     }
 
-    return { listUsers };
+    return userById;
 };
 
 const registerUser = async (firstNameP, passwordP, emailP) => {
@@ -107,6 +101,6 @@ const registerUser = async (firstNameP, passwordP, emailP) => {
 module.exports = {
     fetchUsers,
     findUsers,
-    findPk,
+    fetchUserByPk,
     registerUser
 };
