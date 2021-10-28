@@ -20,6 +20,10 @@ jest.mock('../model/User', () => () => {
 
     UserMock.$queryInterface.$useHandler((query, queryOptions, done) => {
 
+        if (query === 'findAll') {
+            UserMock.$queueResult( [UserMock.build({ id: 1 }), UserMock.build({ id: 2 })] );
+        }
+
         if (query === 'findById') {
             if (queryOptions[0] === 2) {
             // Result found, return it
@@ -40,8 +44,9 @@ describe('UserUtil', () => {
     test('should check if fetchUsers returns data', async () => {
         // Given
         const testFetch = await fetchUsers();
+        const result = testFetch.listUsers.length;
         // Then
-        expect(testFetch).not.toBe(undefined);
+        expect(result).toBe(2);
     });
 
     test('should return given user', async () => {
