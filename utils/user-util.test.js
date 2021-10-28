@@ -16,27 +16,20 @@ jest.mock('../model/User', () => () => {
         userName: 'good',
         emailAddress: 'xyz@abc.com',
         password: 'testpassword'
-    }, {
-        instanceMethods: {
-            testFunc: function () {
-                return this.get('id');
-            }
-        }
     });
 
-    UserMock.findOne({
-        where: {
-            userName: 'good'
-        }
-    }).then((user) => {
-    // `user` is a Sequelize Model-like object
-        console.log(user);
-        user.get('id');         // Auto-Incrementing ID available on all Models
-        user.get('email');      // 'email@example.com'; Pulled from default values
-        user.get('username');   // 'my-user'; Pulled from the `where` in the query
-        console.log('popo'+ user.testFunc());
-        user.testFunc();      // Will return 'Test User' as defined above
+    UserMock.$queryInterface.$useHandler((query, queryOptions, done) => {
 
+        if (query === 'findById') {
+            if (queryOptions[0] === 2) {
+            // Result found, return it
+                return UserMock.build({ userName: 'pk Found' });
+            }
+
+            // No results
+            return null;
+
+        }
     });
 
     return UserMock;
@@ -54,16 +47,16 @@ describe('UserUtil', () => {
     test('should return given user', async () => {
         // Given
         const testFindUsers = await findUsers('MM','');
-        console.log(testFindUsers);
+        // console.log(testFindUsers);
         // Then
         expect(testFindUsers).not.toBe(undefined);
     });
 
     test('should return byPK', async () => {
         // Given
-        const testFindUsers = await findPk(3);
-        console.log(testFindUsers);
+        const testFindUsers = await findPk(2);
+        const result = testFindUsers.listUsers.dataValues.userName;
         // Then
-        expect(testFindUsers).not.toBe(undefined);
+        expect(result).toBe('pk Found');
     });
 });
