@@ -21,7 +21,13 @@ jest.mock('../model/User', () => () => {
     UserMock.$queryInterface.$useHandler((query, queryOptions, done) => {
 
         if (query === 'findAll') {
-            UserMock.$queueResult( [UserMock.build({ id: 1 }), UserMock.build({ id: 2 })] );
+            if (queryOptions[0].attributes[0] === 'id' ) {
+                console.log('in');
+                UserMock.$queueResult( [UserMock.build({ id: 0 }), UserMock.build({ id: 2 })] );
+            }
+            else if (queryOptions[0].attributes[0] === 'userName' ) {
+                return UserMock.build({ userName: 'Found userName' });
+            }
         }
 
         if (query === 'findById') {
@@ -51,10 +57,10 @@ describe('UserUtil', () => {
 
     test('should return given user', async () => {
         // Given
-        const testFindUsers = await findUsers('MM','');
-        // console.log(testFindUsers);
+        const testFindUsers = await findUsers('x','');
+        const result = testFindUsers.listUsers.dataValues.userName;
         // Then
-        expect(testFindUsers).not.toBe(undefined);
+        expect(result).toBe('Found userName');
     });
 
     test('should return byPK', async () => {
