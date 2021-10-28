@@ -15,17 +15,17 @@ jest.mock('../model/User', () => () => {
         id: 2,
         userName: 'good',
         emailAddress: 'xyz@abc.com',
-        password: 'testpassword'
+        password: 'test'
     });
 
     UserMock.$queryInterface.$useHandler((query, queryOptions, done) => {
 
         if (query === 'findAll') {
+            const symbolAccess = (obj) => Object.getOwnPropertySymbols(obj);
             if (queryOptions[0].attributes[0] === 'id' ) {
-                console.log('in');
                 UserMock.$queueResult( [UserMock.build({ id: 0 }), UserMock.build({ id: 2 })] );
             }
-            else if (queryOptions[0].attributes[0] === 'userName' ) {
+            else if (queryOptions[0].where.userName[symbolAccess(queryOptions[0].where.userName)[0]] === 'MM' ) {
                 return UserMock.build({ userName: 'Found userName' });
             }
         }
@@ -57,7 +57,7 @@ describe('UserUtil', () => {
 
     test('should return given user', async () => {
         // Given
-        const testFindUsers = await findUsers('x','');
+        const testFindUsers = await findUsers('MM','');
         const result = testFindUsers.listUsers.dataValues.userName;
         // Then
         expect(result).toBe('Found userName');
