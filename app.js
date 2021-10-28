@@ -2,6 +2,7 @@
 
 const Hapi = require('@hapi/hapi');
 const { configureGridRoutes } = require('./routes/grid_routes');
+const { configureUserRoutes } = require('./routes/user_routes');
 const Auth = require('./auth');
 
 const init = async () => {
@@ -27,6 +28,7 @@ const init = async () => {
     await server.start();
 
     await configureGridRoutes(server);
+    await configureUserRoutes(server);
     console.log('Server running on %s', server.info.uri);
 };
 
