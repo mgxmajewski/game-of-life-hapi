@@ -3,7 +3,8 @@
 const {
     fetchUsers,
     findUsers,
-    findPk
+    findPk,
+    registerUser
 } = require('./userUtil');
 
 jest.mock('../model/User', () => () => {
@@ -12,8 +13,8 @@ jest.mock('../model/User', () => () => {
 
     const dbMock = new SequelizeMock();
     const UserMock = dbMock.define('Users',  {
-        id: 2,
-        userName: 'good',
+        id: 1,
+        userName: 'goodOne',
         emailAddress: 'xyz@abc.com',
         password: 'test'
     });
@@ -34,6 +35,11 @@ jest.mock('../model/User', () => () => {
             if (queryOptions[0] === 2) {
             // Result found, return it
                 return UserMock.build({ userName: 'pk Found' });
+            }
+
+            if (query === 'build') {
+                // Result found, return it
+                return UserMock.build();
             }
 
             // No results
@@ -69,5 +75,15 @@ describe('UserUtil', () => {
         const result = testFindUsers.listUsers.dataValues.userName;
         // Then
         expect(result).toBe('pk Found');
+    });
+
+
+    test('should register user', async () => {
+        // Given
+        const testRegisterUser = await registerUser('newUser', 'popo@popo.pl', 'password');
+        console.log(testRegisterUser);
+        const result = testRegisterUser.result.userName;
+        // Then
+        expect(result).toBe('newUser');
     });
 });

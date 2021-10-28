@@ -83,8 +83,30 @@ const findPk = async (pk) => {
     return { listUsers };
 };
 
+const registerUser = async (firstNameP, passwordP, emailP) => {
+
+    console.log('Inside utils::userUtil.js::registerUser');
+    let result = {};
+    try {
+        const regUser = await User.build({
+            userName: firstNameP,
+            emailAddress: emailP,
+            password: passwordP
+        }).save();
+        await User.sync();
+        result = regUser.toJSON();
+    }
+    catch (err) {
+        console.error(err + 'Inside utils::userUtil.js');
+        throw (err);
+    }
+
+    return { result };
+};
+
 module.exports = {
     fetchUsers,
     findUsers,
-    findPk
+    findPk,
+    registerUser
 };
