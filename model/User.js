@@ -7,7 +7,7 @@ module.exports = (sequelize) => {
 
     class User extends Model {}
 
-    User.init({
+    User.init( {
         userName: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -23,9 +23,7 @@ module.exports = (sequelize) => {
         emailAddress: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: {
-                msg: 'Email already exists'
-            },
+            unique: true,
             validate: {
                 notNull: {
                     msg: 'A email is required'
@@ -39,15 +37,6 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING, // set a virtual field
             allowNull: false,
             timestamps: false,
-            hooks: {
-                beforeCreate: (user, options) => {
-
-                    {
-                        user.password = user.password && user.password !== '' ? Bcrypt.hashSync(user.password, 10) : '';
-                        console.log('Before Creating The User');
-                    }
-                }
-            },
             validate: {
                 notNull: {
                     msg: 'A password is required'
@@ -61,7 +50,19 @@ module.exports = (sequelize) => {
                 }
             }
         }
-    },{ sequelize });
+
+    }, {
+        hooks: {
+            beforeCreate: (user, options) => {
+
+                {
+                    user.password = user.password && user.password !== '' ? Bcrypt.hashSync(user.password, 8) : '';
+                    console.log('Before Creating The User');
+                }
+            }
+        },
+        sequelize
+    });
 
     return User;
 };
