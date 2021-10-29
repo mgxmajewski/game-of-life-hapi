@@ -2,8 +2,9 @@
 
 const Joi = require('joi');
 const {
-    registerUser,
-    fetchUsers
+    fetchUsers,
+    findUsers,
+    registerUser
 } = require('../../utils/userUtil');
 
 exports.configureUserRoutes = (server) => {
@@ -25,6 +26,46 @@ exports.configureUserRoutes = (server) => {
                 catch (err) {
                     console.error('Ouch in getUsers', err);
                 }
+            } },
+        {
+            method: 'GET',
+            path: '/user/find/{userName}/{emailAddress?}',
+            config: {
+                description: 'Find User By Name And/Or Email',
+                tags: ['api', 'users'],
+                validate: {
+                    params: Joi.object({
+                        userName: Joi.string().required(),
+                        emailAddress: Joi.string().email()
+                    })
+                }
+            },
+
+
+            handler: async function (request, h) {
+
+                let user = {};
+                try {
+                    console.log(request.params);
+                    const { userName, emailAddress } = request.params;
+                    const checkedForNullEmail = emailAddress ? emailAddress : '';
+                    user = await findUsers(userName, checkedForNullEmail).then(
+
+                        (userFound) => {
+
+                            return userFound;
+                        }).catch((err) => {
+
+                        console.log('Throw Err From Handler'); throw err;
+                    });
+
+                }
+                catch (err) {
+                    console.error('Ouch in Handler', err);
+                    return { response: err.errors };
+                }
+
+                return user;
             } },
         {
             method: 'POST',
