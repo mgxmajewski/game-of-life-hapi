@@ -1,6 +1,7 @@
 'use strict';
 
 const Joi = require('joi');
+const Bcrypt = require('bcrypt');
 const {
     fetchUsers,
     findUsers,
@@ -131,14 +132,14 @@ exports.configureUserRoutes = (server) => {
                         (userFound) => {
 
                             console.log(`1: ${userFound.password}, 2: ${password}`);
-                            const isAuth = userFound.password === password;
+                            const isAuth = Bcrypt.compare( password,userFound.password);
+                            console.log(isAuth);
                             if (isAuth) {
 
-                                return h.response('success');
+                                return h.response(userFound.id);
                             }
 
                             return h.response('401');
-
 
 
                         }).catch((err) => {
