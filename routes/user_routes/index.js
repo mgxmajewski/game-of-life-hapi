@@ -1,11 +1,31 @@
 'use strict';
 
 const Joi = require('joi');
-const { registerUser } = require('../../utils/userUtil');
+const {
+    registerUser,
+    fetchUsers
+} = require('../../utils/userUtil');
 
 exports.configureUserRoutes = (server) => {
 
     return server.route([
+        {
+            method: 'GET',
+            path: '/user/get',
+            config: {
+                description: 'Get users',
+                tags: ['api', 'users'] },
+            handler: async function (request, h) {
+
+                try {
+                    const allUsers = await fetchUsers();
+                    console.log('success');
+                    return allUsers;
+                }
+                catch (err) {
+                    console.error('Ouch in getUsers', err);
+                }
+            } },
         {
             method: 'POST',
             path: '/user/create',
