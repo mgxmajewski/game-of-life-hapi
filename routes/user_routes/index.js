@@ -4,7 +4,8 @@ const Joi = require('joi');
 const {
     fetchUsers,
     findUsers,
-    registerUser
+    registerUser,
+    findUserToAuth
 } = require('../../utils/userUtil');
 
 exports.configureUserRoutes = (server) => {
@@ -102,6 +103,56 @@ exports.configureUserRoutes = (server) => {
                 }
 
                 return newUser;
+            } }
+        ,
+        {
+            method: 'POST',
+            path: '/user/login',
+            config: {
+                description: 'AuthUser',
+                tags: ['api', 'users'],
+                validate: {
+                    payload: Joi.object({
+                        emailAddress: Joi.string().required(),
+                        password: Joi.string().required()
+                    })
+                }
+            },
+
+
+            handler: async function (request, h) {
+
+                const { emailAddress, password } = request.payload;
+
+                let AuthUser = {};
+                try {
+                    AuthUser = await findUserToAuth(emailAddress).then(
+
+                        (userFound) => {
+
+                            console.log(`1: ${userFound.password}, 2: ${password}`);
+                            const isAuth = userFound.password === password;
+                            if (isAuth) {
+
+                                return h.response('success');
+                            }
+
+                            return h.response('401');
+
+
+
+                        }).catch((err) => {
+
+                        console.log('Throw Err From Handler'); throw err;
+                    });
+
+                }
+                catch (err) {
+                    console.error('Ouch in Handler', err);
+                    return { response: err.errors };
+                }
+
+                return AuthUser;
             } }
     ]);
 };
