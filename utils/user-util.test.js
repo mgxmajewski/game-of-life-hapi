@@ -4,7 +4,7 @@ const {
     fetchUsers,
     findUsers,
     fetchUserByPk,
-    registerUser
+    registerUser, findUserToAuth
 } = require('./userUtil');
 
 jest.mock('../model/User', () => () => {
@@ -24,7 +24,7 @@ jest.mock('../model/User', () => () => {
         if (query === 'findAll') {
             const symbolAccess = (obj) => Object.getOwnPropertySymbols(obj);
             if (queryOptions[0].attributes[0] === 'id' ) {
-                UserMock.$queueResult( [UserMock.build({ id: 0 }), UserMock.build({ id: 2 })] );
+                return UserMock.$queueResult( [UserMock.build({ id: 0 }), UserMock.build({ id: 2 })] );
             }
             else if (queryOptions[0].where.userName[symbolAccess(queryOptions[0].where.userName)[0]] === 'MM' ) {
                 return UserMock.build({ userName: 'Found userName' });
@@ -36,16 +36,23 @@ jest.mock('../model/User', () => () => {
             // Result found, return it
                 return UserMock.build({ userName: 'pk Found' });
             }
-
-            if (query === 'build') {
-                // Result found, return it
-                return UserMock.build();
-            }
-
-            // No results
-            return null;
-
         }
+
+        if (query === 'findOne') {
+            if (queryOptions[0].where.emailAddress === 'xyz@wzy.com') {
+                // Result found, return it
+                return UserMock.build({ userName: 'Email Found' });
+            }
+        }
+
+        if (query === 'build') {
+            // Result found, return it
+            return UserMock.build();
+        }
+
+        // No results
+        return null;
+
     });
 
     return UserMock;
@@ -56,7 +63,7 @@ describe('UserUtil', () => {
     test('should check if fetchUsers returns data', async () => {
         // Given
         const testFetch = await fetchUsers();
-        const result = testFetch.listUsers.length;
+        const result = testFetch.listUsers._results[0].content.length;
         // Then
         expect(result).toBe(2);
     });
@@ -76,6 +83,15 @@ describe('UserUtil', () => {
         const result = testFindByPk.dataValues.userName;
         // Then
         expect(result).toBe('pk Found');
+    });
+
+    test('should return by emailAddress', async () => {
+        // Given
+        const testFindUserToAuth = await findUserToAuth('xyz@wzy.com');
+        console.log(testFindUserToAuth);
+        const result = testFindUserToAuth.dataValues.userName;
+        // Then
+        expect(result).toBe('Email Found');
     });
 
 

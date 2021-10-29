@@ -98,9 +98,31 @@ const registerUser = async (firstNameP, passwordP, emailP) => {
     return { result };
 };
 
+const findUserToAuth = async (emailAddress) => {
+
+    console.log('Inside utils::userUtil.js::findUserToAuth ');
+
+    let listUsers;
+    try {
+        listUsers = await User.findOne({
+            attributes: ['id', 'emailAddress', 'password'],
+            where: {
+                emailAddress
+            }
+        });
+    }
+    catch (err) {
+        console.error(err);
+        throw err;
+    }
+
+    return listUsers;
+};
+
 module.exports = {
     fetchUsers,
     findUsers,
     fetchUserByPk,
-    registerUser
+    registerUser,
+    findUserToAuth
 };
