@@ -1,6 +1,7 @@
 'use strict';
 
 const Joi = require('joi');
+const Jwt = require('jsonwebtoken');
 const Bcrypt = require('bcrypt');
 const {
     fetchUsers,
@@ -133,10 +134,10 @@ exports.configureUserRoutes = (server) => {
 
                             console.log(`1: ${userFound.password}, 2: ${password}`);
                             const isAuth = Bcrypt.compare( password,userFound.password);
-                            console.log(isAuth);
                             if (isAuth) {
 
-                                return h.response(userFound.id);
+                                const tokenAuth = Jwt.sign({ 'id': userFound.id }, process.env.HAPI_JWT_DEV_SECRET);
+                                return h.response(tokenAuth);
                             }
 
                             return h.response('401');
