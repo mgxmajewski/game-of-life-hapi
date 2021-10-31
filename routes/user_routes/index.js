@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const Jwt = require('jsonwebtoken');
-const Bcrypt = require('bcrypt');
+const Bcrypt = require('bcryptjs');
 const {
     fetchUsers,
     findUsers,
@@ -136,7 +136,7 @@ exports.configureUserRoutes = (server) => {
                             const isAuth = Bcrypt.compare( password,userFound.password);
                             if (isAuth) {
 
-                                const tokenAuth = Jwt.sign({ 'id': userFound.id }, process.env.HAPI_JWT_DEV_SECRET);
+                                const tokenAuth = Jwt.sign({ 'id': userFound.id }, 'NeverShareYourSecret');
                                 return h.response(tokenAuth);
                             }
 
