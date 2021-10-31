@@ -19,7 +19,7 @@ const configPostGrid = (gridJSON) => {
 
     return {
         method: 'post',
-        url: 'http://localhost:4000/',
+        url: 'http://ubuntu2004.wsl:4000/',
         headers: {
             'Content-Type': 'application/json'
         },
