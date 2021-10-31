@@ -1,6 +1,6 @@
 'use strict';
 
-const { GameOfLife } = require('../helpers/game_of_life_core/gameOfLife');
+const { GameOfLife } = require('../helpers/game_of_life_core/GameOfLife');
 
 exports.InitiateGrid = (columns, rows, aliveCells) => {
 
