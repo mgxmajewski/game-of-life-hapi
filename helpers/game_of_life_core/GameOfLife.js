@@ -1,19 +1,21 @@
-const {Grid} = require('./Grid.js')
+'use strict';
+
+const { Grid } = require('./Grid.js');
 
 class GameOfLife {
     constructor(columns, rows) {
-        this.columns = columns
-        this.rows = rows
-        this.grid = new Grid(columns, rows)
-        this.initiateLife = []
+        this.columns = columns;
+        this.rows = rows;
+        this.grid = new Grid(columns, rows);
+        this.initiateLife = [];
     }
 
     /**
      * Returns actual grid
      * @return {Object} Grid
      */
-    get cellGrid(){
-        return this.grid
+    get cellGrid() {
+        return this.grid;
     }
 
     /**
@@ -23,12 +25,12 @@ class GameOfLife {
      * each cell by using giveLife method
      * @param initialLife {Array} - array of arrays
      */
-    set initiateLife(initialLife){
-        for(let cell = 0; cell < initialLife.length; cell++){
-            const x = initialLife[cell][0]
-            const y = initialLife[cell][1]
-            const spaceToRevive = this.cellGrid.accessCell(x,y)
-            spaceToRevive.giveLife()
+    set initiateLife(initialLife) {
+        for (let cell = 0; cell < initialLife.length; cell++) {
+            const x = initialLife[cell][0];
+            const y = initialLife[cell][1];
+            const spaceToRevive = this.cellGrid.accessCell(x,y);
+            spaceToRevive.giveLife();
         }
     }
 
@@ -36,8 +38,8 @@ class GameOfLife {
      * Updates Grid
      * @param {Grid} updatedGrid
      */
-    set updatedGrid(updatedGrid){
-        this.grid = updatedGrid
+    set updatedGrid(updatedGrid) {
+        this.grid = updatedGrid;
     }
 
     /**
@@ -54,22 +56,24 @@ class GameOfLife {
      * number required for decision making. Cells which are decided to be revived are yielded
      * in cellsToRevive array. It is provided as argument to initiateLife setter.
      */
-    updateGrid(){
-        const cellsToRevive = []
-        for (let x = 0; x < this.columns; x++){
-            for(let y = 0; y < this.rows; y++){
-                const cellAnalysed = this.grid.accessCell(x,y)
-                const cellAnalysisResult = this.grid.analiseNeighbourCells(cellAnalysed)
-                if (cellAnalysisResult === 3){
-                    cellsToRevive.push([x,y])
-                } else if ((cellAnalysisResult === 3 || cellAnalysisResult === 2) && cellAnalysed.isAlive){
-                    cellsToRevive.push([x,y])
+    updateGrid() {
+        const cellsToRevive = [];
+        for (let x = 0; x < this.columns; x++) {
+            for (let y = 0; y < this.rows; y++) {
+                const cellAnalysed = this.grid.accessCell(x,y);
+                const cellAnalysisResult = this.grid.analiseNeighbourCells(cellAnalysed);
+                if (cellAnalysisResult === 3) {
+                    cellsToRevive.push([x,y]);
+                }
+                else if ((cellAnalysisResult === 3 || cellAnalysisResult === 2) && cellAnalysed.isAlive) {
+                    cellsToRevive.push([x,y]);
                 }
             }
         }
-        this.updatedGrid = new Grid(this.columns, this.rows)
-        this.initiateLife = cellsToRevive
+
+        this.updatedGrid = new Grid(this.columns, this.rows);
+        this.initiateLife = cellsToRevive;
     }
 }
 
-module.exports = {GameOfLife}
+module.exports = { GameOfLife };
