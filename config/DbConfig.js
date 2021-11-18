@@ -9,6 +9,8 @@ const DB_CONSTANTS = {
         DB_PASS: 'password',
         DB_USER: 'postgres',
         DB_HOST: 'ubuntu2004.wsl'
+        // GCP host
+        // DB_HOST: '172.17.0.1',
     },
     PRODUCTION:
     {
