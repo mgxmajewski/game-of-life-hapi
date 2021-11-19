@@ -27,6 +27,7 @@
     "@hapi/hapi": "^20.2.1",
     "axios": "^0.24.0",
     "bcryptjs": "^2.4.3",
+    "dotenv": "^10.0.0",
     "graphi": "^9.0.1",
     "graphql-cli": "^4.1.0",
     "hapi": "^18.1.0",

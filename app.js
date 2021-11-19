@@ -1,10 +1,10 @@
 'use strict';
 
+require('dotenv').config();
 const Hapi = require('@hapi/hapi');
 const { configureGridRoutes } = require('./routes/grid_routes');
 const { configureUserRoutes } = require('./routes/user_routes');
 const Auth = require('./auth');
-const Config = require('./config');
 
 const init = async () => {
 
@@ -12,7 +12,7 @@ const init = async () => {
     const DEFAULT_PORT = 3000;
     const RADIX = 10;
 
-    console.log(Config.AppConfig.DEVELOPMENT.GQL_ENDPOINT);
+
     const server = Hapi.server({
         host: process.env.HOST || DEFAULT_HOST,
         port: parseInt(process.env.PORT, RADIX) || DEFAULT_PORT,
