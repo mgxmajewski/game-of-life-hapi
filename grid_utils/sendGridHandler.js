@@ -16,23 +16,24 @@ const gridToPost = (grid) => {
     });
 };
 
-const configPostGrid = (gridJSON) => {
+const configPostGrid = (gridJSON, authToken) => {
 
     return {
         method: 'post',
         url: `${Config.AppConfig.DEVELOPMENT.GQL_ENDPOINT}`,
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `${authToken}`
         },
         data: gridJSON
     };
 };
 
-const pushConfiguredGrid = (gridToSend) => {
+const pushConfiguredGrid = (gridToSend, authToken) => {
 
     try {
         const dataToPost = gridToPost(gridToSend);
-        const gridPostRequest = configPostGrid(dataToPost);
+        const gridPostRequest = configPostGrid(dataToPost, authToken);
         return Axios(gridPostRequest);
     }
     catch (error) {
@@ -40,7 +41,7 @@ const pushConfiguredGrid = (gridToSend) => {
     }
 };
 
-exports.sendGrid = (gridToSend) => {
+exports.sendGrid = (gridToSend, authToken) => {
 
-    pushConfiguredGrid(gridToSend);
+    pushConfiguredGrid(gridToSend, authToken);
 };

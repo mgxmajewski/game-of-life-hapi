@@ -35,7 +35,8 @@ const clickedCellHandlerConfig = {
 
         const { cell, grid } = request.payload;
         const updatedGrid = handleClickedCell(grid, cell);
-        sendGrid(updatedGrid);
+        const { token } = request.auth;
+        sendGrid(updatedGrid, token);
         return 'changed clicked cell state';
     }
 };
