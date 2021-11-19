@@ -1,6 +1,7 @@
 'use strict';
 
 const Axios = require('axios');
+const Config = require('../config');
 
 const gridToPost = (grid) => {
 
@@ -19,7 +20,7 @@ const configPostGrid = (gridJSON) => {
 
     return {
         method: 'post',
-        url: 'http://ubuntu2004.wsl:4000/',
+        url: `${Config.AppConfig.DEVELOPMENT.GQL_ENDPOINT}`,
         headers: {
             'Content-Type': 'application/json'
         },

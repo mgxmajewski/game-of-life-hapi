@@ -1,6 +1,7 @@
 'use strict';
 
 const Axios = require('axios');
+const Config = require('../config');
 
 const data = JSON.stringify({
     query: `query {
@@ -13,7 +14,7 @@ const data = JSON.stringify({
 
 const configGetGrid = {
     method: 'post',
-    url: 'http://ubuntu2004.wsl:4000/',
+    url: `${Config.AppConfig.DEVELOPMENT.GQL_ENDPOINT}`,
     headers: {
         'Content-Type': 'application/json'
     },
