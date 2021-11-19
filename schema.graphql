@@ -7,6 +7,7 @@ schema {
 }
 
 type Mutation {
+    getStatesLength: String!
     postState(grid: [[String]]!, user: String!): ID!
 }
 
