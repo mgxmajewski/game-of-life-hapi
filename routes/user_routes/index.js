@@ -3,12 +3,14 @@
 const Joi = require('joi');
 const Jwt = require('jsonwebtoken');
 const Bcrypt = require('bcryptjs');
+// const { v4: uuidv4 } = require('uuid');
 const {
     fetchUsers,
     findUsers,
     registerUser,
     findUserToAuth
 } = require('../../utils/userUtil');
+const redisClient = require('redis-connection')();
 
 exports.configureUserRoutes = (server) => {
 
@@ -135,8 +137,16 @@ exports.configureUserRoutes = (server) => {
                             console.log(`1: ${userFound.password}, 2: ${password}`);
                             const isAuth = Bcrypt.compare( password,userFound.password);
                             if (isAuth) {
+                                const session = {
+                                    valid: true, // this will be set to false when the person logs out
+                                    // id: uuidv4() // a random session id
+                                    id: userFound.id
+                                    // exp: new Date().getTime() + 5 * 1000 // expires in 30 minutes time
+                                };
+                                // create the session in Redis
+                                redisClient.set(session.id, JSON.stringify(session));
 
-                                const tokenAuth = Jwt.sign({ 'id': userFound.id }, 'NeverShareYourSecret');
+                                const tokenAuth = Jwt.sign(session, 'NeverShareYourSecret', { expiresIn: '1h' });
                                 return h.response(tokenAuth);
                             }
 
