@@ -1,49 +1,25 @@
 'use strict';
 
-const redisClient = require('redis-connection')(); // instantiate redis-connection
-const Jwt = require('jsonwebtoken');
+const Redis = require('redis');
+const { promisify } = require('util');
 
-redisClient.set('redis', 'working');
+const redisClient = Redis.createClient();
+const getRedisAsync = promisify(redisClient.get).bind(redisClient);
+
+redisClient.set('key', 'value', Redis.print);
+getRedisAsync('key').then((res) => console.log(res));
 
 const authPlugin = {
     register: function (server, options) {
 
-        module.exports.validate = (decoded, request, h) => {
+        module.exports.validate = async function (decoded, request, h) {
 
-            console.log(' - - - - - - - DECODED token:');
-            console.log(decoded);
-            // do your checks to see if the session is valid against redis
-            const redisLookup = () => {
+            const isInRedis = await getRedisAsync(decoded.id)
+                .then( (res) => {
 
-                return redisClient.get(decoded.id, (redisError, reply) => {
-                    /* istanbul ignore if */
-                    if (redisError) {
-                        console.log(redisError);
-                    }
-
-                    console.log(' - - - - - - - REDIS reply - - - - - - - ', reply);
-                    let session;
-                    if (reply) {
-                        session = JSON.parse(reply);
-                    }
-                    else { // unable to find session in redis ... reply is null
-                        return h(redisError, false);
-                    }
-
-                    if (session.valid === true) {
-                        const tokenValid = Jwt.verify(session, 'NeverShareYourSecret');
-                        console.log(tokenValid);
-                        // if (tokenValid) {
-                        return h(redisError, true);
-                        // }
-                    }
-
-                    return h(redisError, false);
-
+                    return res !== null;
                 });
-            };
-
-            if (!redisLookup()) {
+            if (!isInRedis) {
                 return { isValid: false };
             }
 

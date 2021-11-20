@@ -10,7 +10,9 @@ const {
     registerUser,
     findUserToAuth
 } = require('../../utils/userUtil');
-const redisClient = require('redis-connection')();
+const Redis = require('redis');
+
+const redisClient = Redis.createClient();
 
 exports.configureUserRoutes = (server) => {
 
