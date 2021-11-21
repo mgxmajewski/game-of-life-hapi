@@ -128,7 +128,9 @@ exports.configureUserRoutes = (server) => {
 
             handler: async function (request, h) {
 
-                const { emailAddress, password } = request.payload;
+                // parse login and password from headers
+                const b64auth = (request.headers.authorization || '').split(' ')[1] || '';
+                const [emailAddress , password]  = Buffer.from(b64auth, 'base64').toString().split(':');
 
                 let AuthUser = {};
                 try {
