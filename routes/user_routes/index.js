@@ -22,7 +22,8 @@ exports.configureUserRoutes = (server) => {
             path: '/user/get',
             config: {
                 description: 'Get users',
-                tags: ['api', 'users'] },
+                tags: ['api', 'users']
+            },
             handler: async function (request, h) {
 
                 try {
@@ -33,7 +34,8 @@ exports.configureUserRoutes = (server) => {
                 catch (err) {
                     console.error('Ouch in getUsers', err);
                 }
-            } },
+            }
+        },
         {
             method: 'GET',
             path: '/user/find/{userName}/{emailAddress?}',
@@ -57,13 +59,13 @@ exports.configureUserRoutes = (server) => {
                     const { userName, emailAddress } = request.params;
                     const checkedForNullEmail = emailAddress ? emailAddress : '';
                     user = await findUsers(userName, checkedForNullEmail).then(
-
                         (userFound) => {
 
                             return userFound;
                         }).catch((err) => {
 
-                        console.log('Throw Err From Handler'); throw err;
+                        console.log('Throw Err From Handler');
+                        throw err;
                     });
 
                 }
@@ -73,7 +75,8 @@ exports.configureUserRoutes = (server) => {
                 }
 
                 return user;
-            } },
+            }
+        },
         {
             method: 'POST',
             path: '/user/create',
@@ -92,14 +95,15 @@ exports.configureUserRoutes = (server) => {
 
                 let newUser = {};
                 try {
-                    newUser  = await registerUser(request.payload.userName,
-                        request.payload.password,request.payload.emailAddress ).then(
+                    newUser = await registerUser(request.payload.userName,
+                        request.payload.password, request.payload.emailAddress).then(
                         (registeredNewUser) => {
 
                             return registeredNewUser;
                         }).catch((err) => {
 
-                        console.log('Throw Err From Handler'); throw err;
+                        console.log('Throw Err From Handler');
+                        throw err;
                     });
 
                 }
@@ -109,7 +113,8 @@ exports.configureUserRoutes = (server) => {
                 }
 
                 return newUser;
-            } }
+            }
+        }
         ,
         {
             method: 'POST',
@@ -135,11 +140,10 @@ exports.configureUserRoutes = (server) => {
                 let AuthUser = {};
                 try {
                     AuthUser = await findUserToAuth(emailAddress).then(
-
                         (userFound) => {
 
                             console.log(`1: ${userFound.password}, 2: ${password}`);
-                            const isAuth = Bcrypt.compare( password,userFound.password);
+                            const isAuth = Bcrypt.compare(password, userFound.password);
                             if (isAuth) {
                                 const session = {
                                     valid: true, // this will be set to false when the person logs out
@@ -150,7 +154,7 @@ exports.configureUserRoutes = (server) => {
                                 // create the session in Redis
                                 redisClient.set(session.id, JSON.stringify(session));
 
-                                const tokenAuth = Jwt.sign(session, 'NeverShareYourSecret', { expiresIn: '1h' });
+                                const tokenAuth = Jwt.sign(session, 'NeverShareYourSecret', { expiresIn: '12h' });
                                 return h.response(tokenAuth);
                             }
 
@@ -159,7 +163,8 @@ exports.configureUserRoutes = (server) => {
 
                         }).catch((err) => {
 
-                        console.log('Throw Err From Handler'); throw err;
+                        console.log('Throw Err From Handler');
+                        throw err;
                     });
 
                 }
@@ -169,6 +174,7 @@ exports.configureUserRoutes = (server) => {
                 }
 
                 return AuthUser;
-            } }
+            }
+        }
     ]);
 };
