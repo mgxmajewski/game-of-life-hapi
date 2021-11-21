@@ -123,19 +123,19 @@ exports.configureUserRoutes = (server) => {
                 description: 'AuthUser',
                 tags: ['api', 'users'],
                 validate: {
-                    payload: Joi.object({
-                        emailAddress: Joi.string().required(),
-                        password: Joi.string().required()
-                    })
+                    headers: Joi.object().keys({
+                        authorization: Joi.string().required()
+                    }).options({ allowUnknown: true })
                 }
             },
 
 
             handler: async function (request, h) {
 
+                console.log(request.headers);
                 // parse login and password from headers
                 const b64auth = (request.headers.authorization || '').split(' ')[1] || '';
-                const [emailAddress , password]  = Buffer.from(b64auth, 'base64').toString().split(':');
+                const [emailAddress, password] = Buffer.from(b64auth, 'base64').toString().split(':');
 
                 let AuthUser = {};
                 try {
