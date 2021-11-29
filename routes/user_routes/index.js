@@ -155,7 +155,10 @@ exports.configureUserRoutes = (server) => {
                                 redisClient.set(session.id, JSON.stringify(session));
 
                                 const tokenAuth = Jwt.sign(session, 'NeverShareYourSecret', { expiresIn: '12h' });
-                                return h.response(tokenAuth);
+                                return h.response({
+                                    token: tokenAuth,
+                                    userId: userFound.id
+                                });
                             }
 
                             return h.response('401');
