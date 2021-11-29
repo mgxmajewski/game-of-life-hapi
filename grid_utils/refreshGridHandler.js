@@ -5,13 +5,13 @@ const { parseGrid } = require('./parseGrid');
 const { renderNextFrame } = require('./renderNextFrame');
 const { sendGrid } = require('./sendGridHandler');
 
-exports.gridRefreshHandler = async () => {
+exports.gridRefreshHandler = async (token) => {
 
     try {
-        const fetchedGrid = await fetchGrid();
+        const fetchedGrid = await fetchGrid(token);
         const parsedGrid = parseGrid(fetchedGrid);
         const nextFrame = renderNextFrame(parsedGrid);
-        sendGrid(nextFrame);
+        sendGrid(nextFrame, token);
     }
     catch (error) {
         console.log(new Error(error));

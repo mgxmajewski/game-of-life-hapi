@@ -39,12 +39,12 @@ exports.addFirstColumn = (parsedGrid) => {
 };
 
 
-exports.addColOrRowHandler = (request, addHandler) => {
+exports.addColOrRowHandler = (request, addHandler, token) => {
 
     const payload = request.payload;
     const parsedGrid = parseGrid(payload.grid);
     const updatedGrid = addHandler(parsedGrid);
-    sendGrid(updatedGrid);
+    sendGrid(updatedGrid, token);
     return `handled ${addHandler}`;
 };
 
