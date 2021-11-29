@@ -8,7 +8,6 @@ const gridToPost = (grid) => {
     return JSON.stringify({
         query: `mutation ($grid: [[String]]!){
   postState(
-    user: "MM", 
     grid: $grid
     )
 }`,
