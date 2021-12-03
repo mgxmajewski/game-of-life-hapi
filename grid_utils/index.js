@@ -6,6 +6,7 @@ const { updateInterval } = require('./intervalSetter');
 const { gridRefreshHandler } = require('./refreshGridHandler');
 const { handleClickedCell } = require('./clickCellHandler');
 const { addLastRow, addLastColumn, addFirstRow, addFirstColumn, addColOrRowHandler } = require('./changeGameSizeHandler');
+const { tokenStitcher } = require('./tokenStitcher');
 
 module.exports = {
     InitiateGrid,
@@ -17,5 +18,6 @@ module.exports = {
     addLastColumn,
     addFirstRow,
     addFirstColumn,
-    addColOrRowHandler
+    addColOrRowHandler,
+    tokenStitcher
 };

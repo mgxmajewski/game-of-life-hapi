@@ -19,7 +19,8 @@ const cookieOptions = {
     // ttl: 365 * 24 * 60 * 60 * 1000, // expires a year from today
     // encoding: 'none',    // we already used JWT to encode
     isSecure: false,      // warm & fuzzy feelings
-    isHttpOnly: true,    // prevent client alteration
+    isHttpOnly: true,
+    // isSameSite: false // prevent client alteration
     // clearInvalid: false, // remove invalid cookies
     // strictHeader: true,  // don't allow violations of RFC 6265
     path: '/'            // set the cookie for all routes
@@ -143,7 +144,9 @@ exports.configureUserRoutes = (server) => {
 
             handler: async function (request, h) {
 
-                console.log(request.headers);
+                const logVAr = request;
+                console.log(`logVAr: ` + logVAr);
+                // console.log(`logVAr: ` + JSON.stringify(logVAr));
                 // parse login and password from headers
                 const b64auth = (request.headers.authorization || '').split(' ')[1] || '';
                 const [emailAddress, password] = Buffer.from(b64auth, 'base64').toString().split(':');
@@ -163,10 +166,16 @@ exports.configureUserRoutes = (server) => {
                                     // exp: new Date().getTime() + 5 * 1000 // expires in 30 minutes time
                                 };
                                 // create the session in Redis
-                                redisClient.set(session.id, JSON.stringify(session));
-
                                 const tokenAuth = Jwt.sign(session, 'NeverShareYourSecret', { expiresIn: '12h' });
-                                return h.response(tokenAuth).state('session', tokenAuth, cookieOptions);
+                                console.log(`tokenAuth: ` + tokenAuth);
+                                const splitToken = tokenAuth.split('.');
+                                const headerAndPayload = `${splitToken[0]}.${splitToken[1]}`;
+                                const signature = `.${splitToken[2]}`;
+                                // console.log(`signature: ` + signature);
+                                session.signature = signature;
+                                redisClient.set(userFound.id, JSON.stringify(session));
+                                // h.state('signature', signature, cookieOptions);
+                                return h.response(tokenAuth).state('signature', signature, cookieOptions);
                             }
 
                             return h.response('401');
