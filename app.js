@@ -17,7 +17,10 @@ const init = async () => {
         host: process.env.HOST || DEFAULT_HOST,
         port: parseInt(process.env.PORT, RADIX) || DEFAULT_PORT,
         routes: {
-            cors: true
+            cors: {
+                origin: ['*'],
+                credentials: true
+            }
         }
     });
 
