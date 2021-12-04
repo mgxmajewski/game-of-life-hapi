@@ -28,7 +28,7 @@ const init = async () => {
     await server.register(require('hapi-auth-jwt2'));
     await server.register(require('./auth'));
     server.auth.strategy('jwt', 'jwt',
-        { key: 'NeverShareYourSecret', // Never Share your secret key
+        { key: process.env.ACCESS_SECRET, // Never Share your secret key
             validate: Auth.validate  // validate function defined above
         });
 
