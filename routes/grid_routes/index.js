@@ -23,7 +23,7 @@ const intervalHandlerConfig = {
     auth: 'jwt',
     handler: function (request, h) {
 
-        const token = tokenStitcher(request);
+        const { token } = request.auth;
         const { timeout } = request.params;
         timeoutSetter(timeout);
         updateInterval(gridRefreshHandler, timeoutGetter(), token);
@@ -37,7 +37,7 @@ const clickedCellHandlerConfig = {
 
         const { cell, grid } = request.payload;
         const updatedGrid = handleClickedCell(grid, cell);
-        const token = tokenStitcher(request);
+        const { token } = request.auth;
         sendGrid(updatedGrid, token);
         return 'changed clicked cell state';
     }
@@ -47,7 +47,7 @@ const addLastRowConfig = {
     auth: 'jwt',
     handler: function (request, h) {
 
-        const token = tokenStitcher(request);
+        const { token } = request.auth;
         return addColOrRowHandler(request, addLastRow, token);
     }
 };
@@ -56,7 +56,7 @@ const addLastColConfig = {
     auth: 'jwt',
     handler: function (request, h) {
 
-        const token = tokenStitcher(request);
+        const { token } = request.auth;
         return addColOrRowHandler(request, addLastColumn, token);
     }
 };
@@ -65,7 +65,7 @@ const addFirstRowConfig = {
     auth: 'jwt',
     handler: function (request, h) {
 
-        const token = tokenStitcher(request);
+        const { token } = request.auth;
         return addColOrRowHandler(request, addFirstRow, token);
     }
 };
@@ -74,7 +74,7 @@ const addFirstColConfig = {
     auth: 'jwt',
     handler: function (request, h) {
 
-        const token = tokenStitcher(request);
+        const { token } = request.auth;
         return addColOrRowHandler(request, addFirstColumn, token);
     }
 };
@@ -85,7 +85,7 @@ const initiateCleanGrid = {
 
         const { payload } = request;
         const { columns, rows, aliveCells } = payload;
-        const token = tokenStitcher(request);
+        const { token } = request.auth;
         const updatedGrid = InitiateGrid(columns, rows, aliveCells).cellGrid.gridView;
         console.log(updatedGrid);
         sendGrid(updatedGrid, token);

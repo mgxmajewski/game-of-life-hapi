@@ -144,9 +144,6 @@ exports.configureUserRoutes = (server) => {
 
             handler: async function (request, h) {
 
-                const logVAr = request;
-                console.log(`logVAr: ` + logVAr);
-                // console.log(`logVAr: ` + JSON.stringify(logVAr));
                 // parse login and password from headers
                 const b64auth = (request.headers.authorization || '').split(' ')[1] || '';
                 const [emailAddress, password] = Buffer.from(b64auth, 'base64').toString().split(':');
@@ -157,25 +154,19 @@ exports.configureUserRoutes = (server) => {
                         (userFound) => {
 
                             console.log(`1: ${userFound.password}, 2: ${password}`);
-                            const isAuth = Bcrypt.compare(password, userFound.password);
-                            if (isAuth) {
+                            const userIsAuth = Bcrypt.compare(password, userFound.password);
+                            if (userIsAuth) {
                                 const session = {
-                                    valid: true, // this will be set to false when the person logs out
-                                    // id: uuidv4() // a random session id
                                     id: userFound.id
+                                    // id: uuidv4() // a random session id
+                                    // valid: true // this will be set to false when the person logs out
                                     // exp: new Date().getTime() + 5 * 1000 // expires in 30 minutes time
                                 };
                                 // create the session in Redis
-                                const tokenAuth = Jwt.sign(session, 'NeverShareYourSecret', { expiresIn: '12h' });
-                                console.log(`tokenAuth: ` + tokenAuth);
-                                const splitToken = tokenAuth.split('.');
-                                const headerAndPayload = `${splitToken[0]}.${splitToken[1]}`;
-                                const signature = `.${splitToken[2]}`;
-                                // console.log(`signature: ` + signature);
-                                session.signature = signature;
                                 redisClient.set(userFound.id, JSON.stringify(session));
-                                // h.state('signature', signature, cookieOptions);
-                                return h.response(tokenAuth).state('signature', signature, cookieOptions);
+                                const accessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '12h' });
+                                const refreshToken = Jwt.sign(session, process.env.REFRESH_SECRET);
+                                return h.response(accessToken).state('refreshToken', refreshToken, cookieOptions);
                             }
 
                             return h.response('401');
