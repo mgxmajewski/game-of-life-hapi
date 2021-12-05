@@ -10,9 +10,12 @@ const {
     registerUser,
     findUserToAuth
 } = require('../../utils/userUtil');
+const JwtDecode = require('jwt-decode');
 const Redis = require('redis');
+const { promisify } = require('util');
 
 const redisClient = Redis.createClient();
+const getRedisAsync = promisify(redisClient.get).bind(redisClient);
 
 
 const cookieOptions = {
@@ -185,6 +188,59 @@ exports.configureUserRoutes = (server) => {
                 }
 
                 return AuthUser;
+            }
+        },
+        {
+            method: 'POST',
+            path: '/user/refresh-token',
+            config: {
+                description: 'RefreshToken',
+                tags: ['api', 'users'],
+                validate: {
+                    headers: Joi.object().keys({
+                        authorization: Joi.string().required()
+                    }).options({ allowUnknown: true })
+                }
+            },
+
+            handler: async function (request, h) {
+
+                let newAccessToken;
+                const { refreshToken } = request.state;
+
+                if (refreshToken === null) {
+                    return h.response(401);
+                }
+
+                const userId = JwtDecode(refreshToken).id;
+
+                const session = {
+                    id: userId
+                    // id: uuidv4() // a random session id
+                    // valid: true // this will be set to false when the person logs out
+                    // exp: new Date().getTime() + 5 * 1000 // expires in 30 minutes time
+                };
+
+                const isInRedis = await getRedisAsync(userId)
+                    .then((res) => {
+
+                        return res !== null;
+                    });
+
+                if (!isInRedis) {
+                    return h.response(403);
+                }
+
+                Jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
+
+                    if (err) {
+                        return h.response(403);
+                    }
+
+                    newAccessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '12h' });
+                });
+
+                return h.response(newAccessToken);
             }
         }
     ]);
