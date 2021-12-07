@@ -16,6 +16,7 @@ const { promisify } = require('util');
 
 const redisClient = Redis.createClient();
 const getRedisAsync = promisify(redisClient.get).bind(redisClient);
+const delRedisAsync = promisify(redisClient.del).bind(redisClient);
 
 
 const cookieOptions = {
@@ -129,8 +130,7 @@ exports.configureUserRoutes = (server) => {
 
                 return newUser;
             }
-        }
-        ,
+        },
         {
             method: 'POST',
             path: '/user/login',
@@ -163,17 +163,16 @@ exports.configureUserRoutes = (server) => {
                                     id: userFound.id
                                     // id: uuidv4() // a random session id
                                     // valid: true // this will be set to false when the person logs out
-                                    // exp: new Date().getTime() + 5 * 1000 // expires in 30 minutes time
+                                    // expiresIn: new Date().getTime() + 60 * 1000 // expires in 60 minutes time
                                 };
                                 // create the session in Redis
                                 redisClient.set(userFound.id, JSON.stringify(session));
-                                const accessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '12h' });
-                                const refreshToken = Jwt.sign(session, process.env.REFRESH_SECRET);
+                                const accessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '45s' });
+                                const refreshToken = Jwt.sign({ id: userFound.id }, process.env.REFRESH_SECRET);
                                 return h.response(accessToken).state('refreshToken', refreshToken, cookieOptions);
                             }
 
                             return h.response('401');
-
 
                         }).catch((err) => {
 
@@ -195,12 +194,12 @@ exports.configureUserRoutes = (server) => {
             path: '/user/refresh-token',
             config: {
                 description: 'RefreshToken',
-                tags: ['api', 'users'],
-                validate: {
-                    headers: Joi.object().keys({
-                        authorization: Joi.string().required()
-                    }).options({ allowUnknown: true })
-                }
+                tags: ['api', 'users']
+                // validate: {
+                //     headers: Joi.object().keys({
+                //         authorization: Joi.string().required()
+                //     }).options({ allowUnknown: true })
+                // }
             },
 
             handler: async function (request, h) {
@@ -208,8 +207,8 @@ exports.configureUserRoutes = (server) => {
                 let newAccessToken;
                 const { refreshToken } = request.state;
 
-                if (refreshToken === null) {
-                    return h.response(401);
+                if (refreshToken === undefined) {
+                    return h.response('No Refresh Token').code(401);
                 }
 
                 const userId = JwtDecode(refreshToken).id;
@@ -232,15 +231,55 @@ exports.configureUserRoutes = (server) => {
                 }
 
                 Jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
-
+                    //TODO check against redis
                     if (err) {
                         return h.response(403);
                     }
 
-                    newAccessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '12h' });
+                    newAccessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '45s' });
                 });
 
                 return h.response(newAccessToken);
+            }
+        },
+        {
+            method: 'POST',
+            path: '/user/logout',
+            config: {
+                description: 'Invalidate httpOnly cookie',
+                tags: ['api', 'users']
+                // validate: {
+                //     headers: Joi.object().keys({
+                //         authorization: Joi.string().required()
+                //     }).options({ allowUnknown: true })
+                // }
+            },
+
+            handler: async function (request, h) {
+
+                // let newAccessToken;
+                const { refreshToken } = request.state;
+
+                if (refreshToken === undefined) {
+                    return h.response('No Refresh Token').code(401);
+                }
+
+                const userId = JwtDecode(refreshToken).id;
+
+                // const isInRedis = await getRedisAsync(userId)
+                //     .then((res) => {
+                //
+                //         return res !== null;
+                //     });
+
+                // if (!isInRedis) {
+                //     return h.response('Not on the list of the valid sessions').unstate('refreshToken').code(403);
+                // }
+
+                const removedFromList = await delRedisAsync(userId);
+                console.log(removedFromList);
+                h.unstate('refreshToken');
+                return h.continue;
             }
         }
     ]);
