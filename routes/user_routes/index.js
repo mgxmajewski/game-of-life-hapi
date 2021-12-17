@@ -19,6 +19,18 @@ const getRedisAsync = promisify(redisClient.get).bind(redisClient);
 const delRedisAsync = promisify(redisClient.del).bind(redisClient);
 
 
+// const joiErrorHandler = (request, h, err) => {
+//
+//     console.log(`err: ` + JSON.stringify(err.details));
+//     // return h.response(err.message);
+//     // throw err.message;
+//     // return err.message;
+//     return h
+//         .response(err.message)
+//         .code(418)
+//         .takeover();
+// };
+
 const cookieOptions = {
     // ttl: 365 * 24 * 60 * 60 * 1000, // expires a year from today
     // encoding: 'none',    // we already used JWT to encode
@@ -98,37 +110,63 @@ exports.configureUserRoutes = (server) => {
             path: '/user/create',
             config: {
                 description: 'Register users',
-                tags: ['api', 'users'],
-                validate: {
-                    payload: Joi.object({
-                        userName: Joi.string().required(),
-                        emailAddress: Joi.string().email({ multiple: true }).required(),
-                        password: Joi.string().required()
-                    })
-                }
+                tags: ['api', 'users']
+                // validate: {
+                //     payload: Joi.object({
+                //         userName: Joi.string().required(),
+                //         emailAddress: Joi.string().email().required(),
+                //         password: Joi.string()
+                //             .required()
+                //             .empty()
+                //             .min(5)
+                //             .max(20)
+                //             .messages({
+                //                 'string.base': `"password" should be a type of 'text'`,
+                //                 'string.empty': `"password" cannot be an empty field`,
+                //                 'string.min': `"password" should have a minimum length of {#limit}`,
+                //                 'string.max': `"password" should have a maximum length of {#limit}`,
+                //                 'any.required': `"password" is a required field`
+                //             })
+                //     }),
+                //     failAction: joiErrorHandler
+                // }
             },
             handler: async function (request, h) {
 
-                let newUser = {};
+                // const newUser = {};
                 try {
-                    newUser = await registerUser(request.payload.userName,
-                        request.payload.password, request.payload.emailAddress).then(
-                        (registeredNewUser) => {
+                    await registerUser(
+                        request.payload.userName,
+                        request.payload.password,
+                        request.payload.emailAddress)
+                        .then((registeredNewUser) => {
 
                             return registeredNewUser;
-                        }).catch((err) => {
+                        })
+                        .catch((err) => {
 
-                        console.log('Throw Err From Handler');
-                        throw err;
-                    });
+                            console.log('Throw Err From Handler');
+                            throw err;
+                        });
 
                 }
                 catch (err) {
+
+                    if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
+                        const errors = err.errors.map((err) => err.message);
+                        console.error('Ouch in Handler', errors);
+                        const data = {
+                            messages: errors
+                        };
+                        return h.response(data).code(419);
+                    }
+
                     console.error('Ouch in Handler', err);
-                    return { response: err.errors };
+
+                    return h.response({ messages: err.errors }).code(418);
                 }
 
-                return newUser;
+                return h.response({ messages: ['Account successfully created'] }).code(200);
             }
         },
         {
@@ -167,7 +205,7 @@ exports.configureUserRoutes = (server) => {
                                 };
                                 // create the session in Redis
                                 redisClient.set(userFound.id, JSON.stringify(session));
-                                const accessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '45s' });
+                                const accessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '10s' });
                                 const refreshToken = Jwt.sign({ id: userFound.id }, process.env.REFRESH_SECRET);
                                 return h.response(accessToken).state('refreshToken', refreshToken, cookieOptions);
                             }
@@ -227,16 +265,16 @@ exports.configureUserRoutes = (server) => {
                     });
 
                 if (!isInRedis) {
-                    return h.response(403);
+                    return h.response(403).code(403);
                 }
 
                 Jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
                     //TODO check against redis
                     if (err) {
-                        return h.response(403);
+                        return h.response(403).code(403);
                     }
 
-                    newAccessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '45s' });
+                    newAccessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '2m' });
                 });
 
                 return h.response(newAccessToken);
@@ -278,7 +316,7 @@ exports.configureUserRoutes = (server) => {
 
                 const removedFromList = await delRedisAsync(userId);
                 console.log(removedFromList);
-                h.unstate('refreshToken');
+                h.unstate('refreshToken', cookieOptions);
                 return h.continue;
             }
         }
