@@ -18,6 +18,16 @@ const redisClient = Redis.createClient();
 const getRedisAsync = promisify(redisClient.get).bind(redisClient);
 const delRedisAsync = promisify(redisClient.del).bind(redisClient);
 
+const isSequelizeError = (err) => err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError';
+const sequelizeErrorsResponse = (h, err) => {
+
+    const errors = err.errors.map((err) => err.message);
+    console.error('Ouch in Handler', errors);
+    const data = {
+        messages: errors
+    };
+    return h.response(data).code(419);
+};
 
 // const joiErrorHandler = (request, h, err) => {
 //
@@ -87,9 +97,9 @@ exports.configureUserRoutes = (server) => {
                     const { userName, emailAddress } = request.params;
                     const checkedForNullEmail = emailAddress ? emailAddress : '';
                     user = await findUsers(userName, checkedForNullEmail).then(
-                        (userFound) => {
+                        (userFromDb) => {
 
-                            return userFound;
+                            return userFromDb;
                         }).catch((err) => {
 
                         console.log('Throw Err From Handler');
@@ -133,40 +143,33 @@ exports.configureUserRoutes = (server) => {
             },
             handler: async function (request, h) {
 
-                // const newUser = {};
+                let newUser = {};
                 try {
-                    await registerUser(
+                    newUser = await registerUser(
                         request.payload.userName,
                         request.payload.password,
                         request.payload.emailAddress)
                         .then((registeredNewUser) => {
 
-                            return registeredNewUser;
+                            return h.response({ messages: [`Account successfully created`] }).code(200);
                         })
                         .catch((err) => {
 
-                            console.log('Throw Err From Handler');
+                            console.log('Throw Err From SequelizeValidationError Handler');
                             throw err;
                         });
 
                 }
                 catch (err) {
 
-                    if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
-                        const errors = err.errors.map((err) => err.message);
-                        console.error('Ouch in Handler', errors);
-                        const data = {
-                            messages: errors
-                        };
-                        return h.response(data).code(419);
+                    if (isSequelizeError(err)) {
+                        return sequelizeErrorsResponse(h, err);
                     }
-
-                    console.error('Ouch in Handler', err);
 
                     return h.response({ messages: err.errors }).code(418);
                 }
 
-                return h.response({ messages: ['Account successfully created'] }).code(200);
+                return newUser;
             }
         },
         {
@@ -189,42 +192,72 @@ exports.configureUserRoutes = (server) => {
                 const b64auth = (request.headers.authorization || '').split(' ')[1] || '';
                 const [emailAddress, password] = Buffer.from(b64auth, 'base64').toString().split(':');
 
-                let AuthUser = {};
-                try {
-                    AuthUser = await findUserToAuth(emailAddress).then(
-                        (userFound) => {
 
-                            console.log(`1: ${userFound.password}, 2: ${password}`);
-                            const userIsAuth = Bcrypt.compare(password, userFound.password);
-                            if (userIsAuth) {
+                const findUser = async () => {
+
+                    return await findUserToAuth(emailAddress)
+                        .then((isUserInDB) => {
+
+                            if (isUserInDB === null) {
+                                throw new Error('User not registered');
+                            }
+                            else {
+                                return isUserInDB;
+                            }
+                        });
+                };
+
+
+                const isUserAuth = async (user) => {
+
+                    return await Bcrypt.compare(password, user.password)
+                        .then((passwordMatch) => {
+
+                            if (passwordMatch === false) {
+                                throw new Error('Wrong password');
+                            }
+                            else {
+                                return true;
+                            }
+                        });
+                };
+
+                let AuthResponse = {};
+                try {
+                    const userFromDb = await findUser();
+                    AuthResponse = await isUserAuth(userFromDb)
+                        .then((authenticationResult) => {
+
+                            if (authenticationResult === true) {
                                 const session = {
-                                    id: userFound.id
+                                    id: userFromDb.id
                                     // id: uuidv4() // a random session id
                                     // valid: true // this will be set to false when the person logs out
                                     // expiresIn: new Date().getTime() + 60 * 1000 // expires in 60 minutes time
                                 };
                                 // create the session in Redis
-                                redisClient.set(userFound.id, JSON.stringify(session));
+                                redisClient.set(userFromDb.id, JSON.stringify(session));
                                 const accessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '10s' });
-                                const refreshToken = Jwt.sign({ id: userFound.id }, process.env.REFRESH_SECRET);
-                                return h.response(accessToken).state('refreshToken', refreshToken, cookieOptions);
+                                const refreshToken = Jwt.sign({ id: userFromDb.id }, process.env.REFRESH_SECRET);
+                                return h.response({ accessToken }).state('refreshToken', refreshToken, cookieOptions);
                             }
+                        })
+                        .catch((err) => {
 
-                            return h.response('401');
-
-                        }).catch((err) => {
-
-                        console.log('Throw Err From Handler');
-                        throw err;
-                    });
-
+                            console.log('Throw Err From Handler');
+                            throw err;
+                        });
                 }
                 catch (err) {
-                    console.error('Ouch in Handler', err);
-                    return { response: err.errors };
+
+                    if (isSequelizeError(err)) {
+                        return sequelizeErrorsResponse(h, err);
+                    }
+
+                    return h.response({ messages: [err.message] }).code(418);
                 }
 
-                return AuthUser;
+                return AuthResponse;
             }
         },
         {
