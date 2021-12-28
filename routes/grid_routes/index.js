@@ -34,6 +34,16 @@ const intervalHandlerConfig = {
     }
 };
 
+const nextStateHandlerConfig = {
+    auth: 'jwt',
+    handler: function (request, h) {
+
+        const { token } = request.auth;
+        gridRefreshHandler(token);
+        return 'success';
+    }
+};
+
 const clickedCellHandlerConfig = {
     auth: 'jwt',
     handler: function (request, h) {
@@ -156,6 +166,11 @@ exports.configureGridRoutes = (server) => {
             method: 'POST',
             path: '/state/{timeout}',
             config: intervalHandlerConfig
+        },
+        {
+            method: 'POST',
+            path: '/next-state/',
+            config: nextStateHandlerConfig
         },
         {
             method: 'POST',
