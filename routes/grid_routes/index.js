@@ -11,8 +11,11 @@ const {
     addLastColumn,
     addFirstRow,
     addFirstColumn,
-    addColOrRowHandler,
-    tokenStitcher
+    deleteLastRow,
+    deleteLastColumn,
+    deleteFirstRow,
+    deleteFirstColumn,
+    addColOrRowHandler
 } = require('../../grid_utils');
 
 
@@ -79,6 +82,42 @@ const addFirstColConfig = {
     }
 };
 
+const deleteLastRowConfig = {
+    auth: 'jwt',
+    handler: function (request, h) {
+
+        const { token } = request.auth;
+        return addColOrRowHandler(request, deleteLastRow, token);
+    }
+};
+
+const deleteLastColConfig = {
+    auth: 'jwt',
+    handler: function (request, h) {
+
+        const { token } = request.auth;
+        return addColOrRowHandler(request, deleteLastColumn, token);
+    }
+};
+
+const deleteFirstRowConfig = {
+    auth: 'jwt',
+    handler: function (request, h) {
+
+        const { token } = request.auth;
+        return addColOrRowHandler(request, deleteFirstRow, token);
+    }
+};
+
+const deleteFirstColConfig = {
+    auth: 'jwt',
+    handler: function (request, h) {
+
+        const { token } = request.auth;
+        return addColOrRowHandler(request, deleteFirstColumn, token);
+    }
+};
+
 const initiateCleanGrid = {
     auth: 'jwt',
     handler: function (request, h) {
@@ -125,6 +164,26 @@ exports.configureGridRoutes = (server) => {
             method: 'POST',
             path: '/add-first-col/',
             config: addFirstColConfig
+        },
+        {
+            method: 'POST',
+            path: '/delete-last-row/',
+            config: deleteLastRowConfig
+        },
+        {
+            method: 'POST',
+            path: '/delete-last-col/',
+            config: deleteLastColConfig
+        },
+        {
+            method: 'POST',
+            path: '/delete-first-row/',
+            config: deleteFirstRowConfig
+        },
+        {
+            method: 'POST',
+            path: '/delete-first-col/',
+            config: deleteFirstColConfig
         },
         {
             method: 'POST',

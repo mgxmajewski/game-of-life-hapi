@@ -5,7 +5,17 @@ const { sendGrid } = require('./sendGridHandler');
 const { updateInterval } = require('./intervalSetter');
 const { gridRefreshHandler } = require('./refreshGridHandler');
 const { handleClickedCell } = require('./clickCellHandler');
-const { addLastRow, addLastColumn, addFirstRow, addFirstColumn, addColOrRowHandler } = require('./changeGameSizeHandler');
+const {
+    addLastRow,
+    addLastColumn,
+    addFirstRow,
+    addFirstColumn,
+    addColOrRowHandler,
+    deleteLastRow,
+    deleteLastColumn,
+    deleteFirstRow,
+    deleteFirstColumn
+} = require('./changeGameSizeHandler');
 const { tokenStitcher } = require('./tokenStitcher');
 
 module.exports = {
@@ -18,6 +28,10 @@ module.exports = {
     addLastColumn,
     addFirstRow,
     addFirstColumn,
+    deleteLastRow,
+    deleteLastColumn,
+    deleteFirstRow,
+    deleteFirstColumn,
     addColOrRowHandler,
     tokenStitcher
 };
