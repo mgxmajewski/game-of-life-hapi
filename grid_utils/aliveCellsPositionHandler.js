@@ -1,29 +1,29 @@
 'use strict';
 
-exports.moveAliveCellsRight = (parsedGrid) => {
+exports.moveAliveCellsRight = (parsedGrid, numOfAffected) => {
 
     const { columns, rows, aliveCells } = parsedGrid;
-    aliveCells.forEach((coordinates) => coordinates[0]++);
+    aliveCells.forEach((coordinates) => coordinates[0] += numOfAffected);
     return { columns, rows, aliveCells };
 };
 
-exports.moveAliveCellsDown = (parsedGrid) => {
+exports.moveAliveCellsDown = (parsedGrid, numOfAffected) => {
 
     const { columns, rows, aliveCells } = parsedGrid;
-    aliveCells.forEach((coordinates) => coordinates[1]++);
+    aliveCells.forEach((coordinates) => coordinates[1] += numOfAffected);
     return { columns, rows, aliveCells };
 };
 
-exports.moveAliveCellsLeft = (parsedGrid) => {
+exports.moveAliveCellsLeft = (parsedGrid, numOfAffected) => {
 
     const { columns, rows, aliveCells } = parsedGrid;
-    aliveCells.forEach((coordinates) => coordinates[0]--);
+    aliveCells.forEach((coordinates) => coordinates[0] -= numOfAffected);
     return { columns, rows, aliveCells };
 };
 
-exports.moveAliveCellsUp = (parsedGrid) => {
+exports.moveAliveCellsUp = (parsedGrid, numOfAffected) => {
 
     const { columns, rows, aliveCells } = parsedGrid;
-    aliveCells.forEach((coordinates) => coordinates[1]--);
+    aliveCells.forEach((coordinates) => coordinates[1] -= numOfAffected);
     return { columns, rows, aliveCells };
 };

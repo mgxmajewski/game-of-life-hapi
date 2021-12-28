@@ -15,7 +15,7 @@ const {
     deleteLastColumn,
     deleteFirstRow,
     deleteFirstColumn,
-    addColOrRowHandler
+    gridResizeHandler
 } = require('../../grid_utils');
 
 
@@ -51,7 +51,9 @@ const addLastRowConfig = {
     handler: function (request, h) {
 
         const { token } = request.auth;
-        return addColOrRowHandler(request, addLastRow, token);
+        const { affected } = request.params;
+
+        return gridResizeHandler(request, addLastRow, parseInt(affected), token);
     }
 };
 
@@ -60,7 +62,9 @@ const addLastColConfig = {
     handler: function (request, h) {
 
         const { token } = request.auth;
-        return addColOrRowHandler(request, addLastColumn, token);
+        const { affected } = request.params;
+
+        return gridResizeHandler(request, addLastColumn, parseInt(affected), token);
     }
 };
 
@@ -69,7 +73,9 @@ const addFirstRowConfig = {
     handler: function (request, h) {
 
         const { token } = request.auth;
-        return addColOrRowHandler(request, addFirstRow, token);
+        const { affected } = request.params;
+
+        return gridResizeHandler(request, addFirstRow, parseInt(affected), token);
     }
 };
 
@@ -78,7 +84,10 @@ const addFirstColConfig = {
     handler: function (request, h) {
 
         const { token } = request.auth;
-        return addColOrRowHandler(request, addFirstColumn, token);
+        const { affected } = request.params;
+        console.log(`affected: ` + affected);
+
+        return gridResizeHandler(request, addFirstColumn, parseInt(affected), token);
     }
 };
 
@@ -87,7 +96,9 @@ const deleteLastRowConfig = {
     handler: function (request, h) {
 
         const { token } = request.auth;
-        return addColOrRowHandler(request, deleteLastRow, token);
+        const { affected } = request.params;
+
+        return gridResizeHandler(request, deleteLastRow, parseInt(affected), token);
     }
 };
 
@@ -96,7 +107,9 @@ const deleteLastColConfig = {
     handler: function (request, h) {
 
         const { token } = request.auth;
-        return addColOrRowHandler(request, deleteLastColumn, token);
+        const { affected } = request.params;
+
+        return gridResizeHandler(request, deleteLastColumn, parseInt(affected), token);
     }
 };
 
@@ -105,7 +118,9 @@ const deleteFirstRowConfig = {
     handler: function (request, h) {
 
         const { token } = request.auth;
-        return addColOrRowHandler(request, deleteFirstRow, token);
+        const { affected } = request.params;
+
+        return gridResizeHandler(request, deleteFirstRow, parseInt(affected), token);
     }
 };
 
@@ -114,7 +129,9 @@ const deleteFirstColConfig = {
     handler: function (request, h) {
 
         const { token } = request.auth;
-        return addColOrRowHandler(request, deleteFirstColumn, token);
+        const { affected } = request.params;
+
+        return gridResizeHandler(request, deleteFirstColumn, parseInt(affected), token);
     }
 };
 
@@ -147,42 +164,42 @@ exports.configureGridRoutes = (server) => {
         },
         {
             method: 'POST',
-            path: '/add-last-row/',
+            path: '/add-last-row/{affected}',
             config: addLastRowConfig
         },
         {
             method: 'POST',
-            path: '/add-last-col/',
+            path: '/add-last-col/{affected}',
             config: addLastColConfig
         },
         {
             method: 'POST',
-            path: '/add-first-row/',
+            path: '/add-first-row/{affected}',
             config: addFirstRowConfig
         },
         {
             method: 'POST',
-            path: '/add-first-col/',
+            path: '/add-first-col/{affected}',
             config: addFirstColConfig
         },
         {
             method: 'POST',
-            path: '/delete-last-row/',
+            path: '/delete-last-row/{affected}',
             config: deleteLastRowConfig
         },
         {
             method: 'POST',
-            path: '/delete-last-col/',
+            path: '/delete-last-col/{affected}',
             config: deleteLastColConfig
         },
         {
             method: 'POST',
-            path: '/delete-first-row/',
+            path: '/delete-first-row/{affected}',
             config: deleteFirstRowConfig
         },
         {
             method: 'POST',
-            path: '/delete-first-col/',
+            path: '/delete-first-col/{affected}',
             config: deleteFirstColConfig
         },
         {

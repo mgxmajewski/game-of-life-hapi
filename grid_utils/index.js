@@ -10,13 +10,12 @@ const {
     addLastColumn,
     addFirstRow,
     addFirstColumn,
-    addColOrRowHandler,
+    gridResizeHandler,
     deleteLastRow,
     deleteLastColumn,
     deleteFirstRow,
     deleteFirstColumn
 } = require('./changeGameSizeHandler');
-const { tokenStitcher } = require('./tokenStitcher');
 
 module.exports = {
     InitiateGrid,
@@ -32,6 +31,5 @@ module.exports = {
     deleteLastColumn,
     deleteFirstRow,
     deleteFirstColumn,
-    addColOrRowHandler,
-    tokenStitcher
+    gridResizeHandler
 };

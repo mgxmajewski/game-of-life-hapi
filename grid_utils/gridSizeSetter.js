@@ -1,33 +1,33 @@
 'use strict';
 
-exports.addRow = (parsedGrid) => {
+exports.addRow = (parsedGrid, numOfAffected) => {
 
     const { columns, aliveCells } = parsedGrid;
     let { rows } = parsedGrid;
-    rows++;
+    rows += numOfAffected;
     return { columns, rows, aliveCells };
 };
 
-exports.addColumn = (parsedGrid) => {
+exports.addColumn = (parsedGrid, numOfAffected) => {
 
     const { rows, aliveCells } = parsedGrid;
     let { columns } = parsedGrid;
-    columns++;
+    columns += numOfAffected;
     return { columns, rows, aliveCells };
 };
 
-exports.deleteRow = (parsedGrid) => {
+exports.deleteRow = (parsedGrid, numOfAffected) => {
 
     const { columns, aliveCells } = parsedGrid;
     let { rows } = parsedGrid;
-    rows--;
+    rows -= numOfAffected;
     return { columns, rows, aliveCells };
 };
 
-exports.deleteColumn = (parsedGrid) => {
+exports.deleteColumn = (parsedGrid, numOfAffected) => {
 
     const { rows, aliveCells } = parsedGrid;
     let { columns } = parsedGrid;
-    columns--;
+    columns -= numOfAffected;
     return { columns, rows, aliveCells };
 };

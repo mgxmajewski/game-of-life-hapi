@@ -16,75 +16,75 @@ const {
 const { sendGrid } = require('./sendGridHandler');
 const { parseGrid } = require('./parseGrid');
 
-exports.addLastRow = (parsedGrid) => {
+exports.addLastRow = (parsedGrid, numOfAffected) => {
 
-    const { columns, rows, aliveCells } = addRow(parsedGrid);
+    const { columns, rows, aliveCells } = addRow(parsedGrid,numOfAffected);
     const grid = InitiateGrid(columns, rows, aliveCells);
     // console.log(grid.cellGrid.gridView);
     return grid.cellGrid.gridView;
 };
 
-exports.addLastColumn = (parsedGrid) => {
+exports.addLastColumn = (parsedGrid, numOfAffected) => {
 
-    const { rows, columns, aliveCells } = addColumn(parsedGrid);
+    const { rows, columns, aliveCells } = addColumn(parsedGrid, numOfAffected);
     const grid = InitiateGrid(columns, rows, aliveCells);
     return grid.cellGrid.gridView;
 };
 
-exports.addFirstRow = (parsedGrid) => {
+exports.addFirstRow = (parsedGrid, numOfAffected) => {
 
-    const gridWithAddedRow = addRow(parsedGrid);
-    const { columns, rows, aliveCells } = moveAliveCellsDown(gridWithAddedRow);
+    const gridWithAddedRow = addRow(parsedGrid, numOfAffected);
+    const { columns, rows, aliveCells } = moveAliveCellsDown(gridWithAddedRow, numOfAffected);
     // console.log({ columns, rows, aliveCells });
     const grid = InitiateGrid(columns, rows, aliveCells);
     return grid.cellGrid.gridView;
 };
 
-exports.addFirstColumn = (parsedGrid) => {
+exports.addFirstColumn = (parsedGrid, numOfAffected) => {
 
-    const gridWithAddedColumn = addColumn(parsedGrid);
-    const { columns, rows, aliveCells } = moveAliveCellsRight(gridWithAddedColumn);
+    const gridWithAddedColumn = addColumn(parsedGrid, numOfAffected);
+    const { columns, rows, aliveCells } = moveAliveCellsRight(gridWithAddedColumn, numOfAffected);
     const grid = InitiateGrid(columns, rows, aliveCells);
     return grid.cellGrid.gridView;
 };
 
-exports.deleteLastRow = (parsedGrid) => {
+exports.deleteLastRow = (parsedGrid, numOfAffected) => {
 
-    const { columns, rows, aliveCells } = deleteRow(parsedGrid);
+    const { columns, rows, aliveCells } = deleteRow(parsedGrid, numOfAffected);
     const grid = InitiateGrid(columns, rows, aliveCells);
     // console.log(grid.cellGrid.gridView);
     return grid.cellGrid.gridView;
 };
 
-exports.deleteLastColumn = (parsedGrid) => {
+exports.deleteLastColumn = (parsedGrid, numOfAffected) => {
 
-    const { rows, columns, aliveCells } = deleteColumn(parsedGrid);
+    const { rows, columns, aliveCells } = deleteColumn(parsedGrid, numOfAffected);
     const grid = InitiateGrid(columns, rows, aliveCells);
     return grid.cellGrid.gridView;
 };
 
-exports.deleteFirstRow = (parsedGrid) => {
+exports.deleteFirstRow = (parsedGrid, numOfAffected) => {
 
-    const gridWithAddedRow = deleteRow(parsedGrid);
-    const { columns, rows, aliveCells } = moveAliveCellsUp(gridWithAddedRow);
+    const gridWithAddedRow = deleteRow(parsedGrid, numOfAffected);
+    const { columns, rows, aliveCells } = moveAliveCellsUp(gridWithAddedRow, numOfAffected);
     // console.log({ columns, rows, aliveCells });
     const grid = InitiateGrid(columns, rows, aliveCells);
     return grid.cellGrid.gridView;
 };
 
-exports.deleteFirstColumn = (parsedGrid) => {
+exports.deleteFirstColumn = (parsedGrid, numOfAffected) => {
 
-    const gridWithAddedColumn = deleteColumn(parsedGrid);
-    const { columns, rows, aliveCells } = moveAliveCellsLeft(gridWithAddedColumn);
+    const gridWithAddedColumn = deleteColumn(parsedGrid, numOfAffected);
+    const { columns, rows, aliveCells } = moveAliveCellsLeft(gridWithAddedColumn, numOfAffected);
     const grid = InitiateGrid(columns, rows, aliveCells);
     return grid.cellGrid.gridView;
 };
 
-exports.addColOrRowHandler = (request, addHandler, token) => {
+exports.gridResizeHandler = (request, addHandler, numOfAffected, token) => {
 
     const payload = request.payload;
     const parsedGrid = parseGrid(payload.grid);
-    const updatedGrid = addHandler(parsedGrid);
+    const updatedGrid = addHandler(parsedGrid, numOfAffected);
     sendGrid(updatedGrid, token);
     return `handled ${addHandler}`;
 };
