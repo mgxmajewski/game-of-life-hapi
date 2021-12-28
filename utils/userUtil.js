@@ -113,7 +113,7 @@ const findUserToAuth = async (emailAddress) => {
     }
     catch (err) {
         console.error(err);
-        throw err;
+        throw (err);
     }
 
     return listUsers;
