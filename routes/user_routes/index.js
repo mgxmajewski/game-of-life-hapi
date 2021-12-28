@@ -307,7 +307,7 @@ exports.configureUserRoutes = (server) => {
                         return h.response(403).code(403);
                     }
 
-                    newAccessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '2m' });
+                    newAccessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '5h' });
                 });
 
                 return h.response(newAccessToken);
