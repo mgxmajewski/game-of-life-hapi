@@ -33,6 +33,7 @@ seq.sync()
     .then(() => console.log('synced successfully'));
 
 module.exports = {
-    usersModel: require('./User')(seq)
+    usersModel: require('./User')(seq),
+    patternsModel: require('./Pattern')(seq)
 };
 
