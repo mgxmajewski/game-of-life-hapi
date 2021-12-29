@@ -36,7 +36,6 @@ module.exports = (sequelize) => {
         password: {
             type: DataTypes.STRING, // set a virtual field
             allowNull: false,
-            timestamps: false,
             validate: {
                 notNull: {
                     msg: 'A password is required'
@@ -61,7 +60,8 @@ module.exports = (sequelize) => {
                 }
             }
         },
-        sequelize
+        sequelize,
+        timestamps: true
     });
 
     return User;
