@@ -4,6 +4,7 @@ require('dotenv').config();
 const Hapi = require('@hapi/hapi');
 const { configureGridRoutes } = require('./routes/grid_routes');
 const { configureUserRoutes } = require('./routes/user_routes');
+const { configurePatternRoutes } = require('./routes/pattern_routes');
 const Auth = require('./auth');
 
 const init = async () => {
@@ -38,6 +39,7 @@ const init = async () => {
 
     await configureGridRoutes(server);
     await configureUserRoutes(server);
+    await configurePatternRoutes(server);
     console.log('Server running on %s', server.info.uri);
     // console.log(`${server}`);
 };
