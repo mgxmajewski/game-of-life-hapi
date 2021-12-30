@@ -145,7 +145,7 @@ const deleteFirstColConfig = {
     }
 };
 
-const initiateCleanGrid = {
+const initiateCustomGrid = {
     auth: 'jwt',
     handler: function (request, h) {
 
@@ -155,7 +155,22 @@ const initiateCleanGrid = {
         const updatedGrid = InitiateGrid(columns, rows, aliveCells).cellGrid.gridView;
         console.log(updatedGrid);
         sendGrid(updatedGrid, token);
-        return 'grid to mutate received';
+        return 'fresh custom grid loaded';
+    }
+};
+
+const initiateCleanGrid = {
+    auth: 'jwt',
+    handler: function (request, h) {
+
+        const { size } = request.params;
+        const aliveCellsMock = [];
+
+        const { token } = request.auth;
+        const updatedGrid = InitiateGrid(size, size, aliveCellsMock).cellGrid.gridView;
+        console.log(updatedGrid);
+        sendGrid(updatedGrid, token);
+        return 'fresh grid loaded';
     }
 };
 
@@ -218,9 +233,14 @@ exports.configureGridRoutes = (server) => {
             config: deleteFirstColConfig
         },
         {
-            method: 'POST',
-            path: '/initiate-clean-grid/',
+            method: 'GET',
+            path: '/initiate-clean-grid/{size}',
             config: initiateCleanGrid
+        },
+        {
+            method: 'POST',
+            path: '/initiate-custom-grid/',
+            config: initiateCustomGrid
         }
     ]);
 };
