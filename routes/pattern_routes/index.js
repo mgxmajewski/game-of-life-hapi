@@ -5,6 +5,7 @@ const {
     createPattern,
     fetchPatternByPk
 } = require('../../utils/patternUtil');
+const { sendGrid } = require('../../grid_utils');
 
 const isSequelizeError = (err) => err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError';
 const sequelizeErrorsResponse = (h, err) => {
@@ -24,6 +25,7 @@ exports.configurePatternRoutes = (server) => {
             method: 'GET',
             path: '/all-patterns/get',
             config: {
+                auth: 'jwt',
                 description: 'Get patterns',
                 tags: ['api', 'patterns']
             },
@@ -43,6 +45,7 @@ exports.configurePatternRoutes = (server) => {
             method: 'GET',
             path: '/pattern/{pk}',
             config: {
+                auth: 'jwt',
                 description: 'Find Pattern By Pk',
                 tags: ['api', 'pattern']
             },
@@ -50,14 +53,14 @@ exports.configurePatternRoutes = (server) => {
 
             handler: async function (request, h) {
 
-                let pattern = {};
+                const { token } = request.auth;
                 try {
                     console.log(request.params);
                     const { pk } = request.params;
-                    pattern = await fetchPatternByPk(pk).then(
+                    await fetchPatternByPk(pk).then(
                         (patternFromDb) => {
 
-                            return patternFromDb.pattern;
+                            return sendGrid(patternFromDb.pattern, token);
                         }).catch((err) => {
 
                         console.log('Throw Err From Handler');
@@ -70,13 +73,14 @@ exports.configurePatternRoutes = (server) => {
                     return { response: err.errors };
                 }
 
-                return pattern;
+                return 'pattern loaded';
             }
         },
         {
             method: 'POST',
             path: '/pattern/create',
             config: {
+                auth: 'jwt',
                 description: 'Create pattern',
                 tags: ['api', 'patterns']
             },
