@@ -59,6 +59,7 @@ exports.configureUserRoutes = (server) => {
             method: 'GET',
             path: '/user/get',
             config: {
+                auth: 'jwt',
                 description: 'Get users',
                 tags: ['api', 'users']
             },
@@ -78,6 +79,7 @@ exports.configureUserRoutes = (server) => {
             method: 'GET',
             path: '/user/find/{userName}/{emailAddress?}',
             config: {
+                auth: 'jwt',
                 description: 'Find User By Name And/Or Email',
                 tags: ['api', 'users'],
                 validate: {
