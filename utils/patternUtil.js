@@ -7,9 +7,8 @@ const Pattern = Models.patternsModel;
 const fetchPatterns = async () => {
 
     console.log('Inside utils::patternUtil.js::fetchPatterns');
-    let listPatterns = {};
     try {
-        listPatterns = await Pattern.findAll({
+        return await Pattern.findAll({
             attributes: ['id','patternName']
         });
 
@@ -18,8 +17,6 @@ const fetchPatterns = async () => {
         console.error(err);
         throw (err);
     }
-
-    return { listPatterns };
 };
 
 
@@ -37,10 +34,6 @@ const createPattern = async (name, grid) => {
 
     console.log('Inside utils::PatternUtil.js::createPattern');
     let result = {};
-    console.log(typeof grid);
-    console.log(`grid: ` + grid);
-    console.log(`grid: ` + JSON.stringify(grid));
-    // const testInput = '{{#,#},{#,#}}';
     try {
         const newPattern = await Pattern.build({
             patternName: name,
