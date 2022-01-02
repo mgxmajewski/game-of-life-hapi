@@ -2,6 +2,7 @@
 
 const Models = require('../model');
 
+const User = Models.usersModel;
 const Pattern = Models.patternsModel;
 const PatternRecord = Models.patternRecordsModel;
 
@@ -76,11 +77,27 @@ const capturePattern = async (creator,snapshot_name, grid) => {
     return { result };
 };
 
+const fetchPatternRecords = async (id) => {
 
+    console.log('Inside utils::patternUtil.js::fetchPatternRecords');
+    try {
+        return await PatternRecord.findAll({
+            where: { creator: id },
+            include: [User],
+            attributes: ['id','snapshot_name']
+        });
+
+    }
+    catch (err) {
+        console.error(err);
+        throw (err);
+    }
+};
 
 module.exports = {
     fetchPatterns,
     createPattern,
     fetchPatternByPk,
-    capturePattern
+    capturePattern,
+    fetchPatternRecords
 };
