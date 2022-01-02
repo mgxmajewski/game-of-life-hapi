@@ -45,10 +45,5 @@ module.exports = (sequelize) => {
         timestamps: true
     });
 
-    // Pattern_Records.associate = (models) => {
-    //
-    //     Pattern_Records.belongsTo(models.User, { foreignKey: 'creator' });
-    // };
-
     return PatternRecord;
 };

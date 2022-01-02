@@ -19,6 +19,23 @@ const seq = new Sequelize(Config.DbConfig.DEVELOPMENT.DB_NAME,
     }
 );
 
+const modelDefiners = [
+    require('./User'),
+    require('./Pattern'),
+    require('./PatternRecord')
+];
+
+// We define all models according to their files.
+for (const modelDefiner of modelDefiners) {
+    modelDefiner(seq);
+}
+
+const usersModel = seq.model('User');
+const patternsModel = seq.model('Pattern');
+const patternRecordsModel = seq.model('PatternRecord');
+
+patternRecordsModel.belongsTo(usersModel, { foreignKey: 'creator' });
+
 seq.authenticate()
     .then( () => {
 
@@ -33,8 +50,8 @@ seq.sync()
     .then(() => console.log('synced successfully'));
 
 module.exports = {
-    usersModel: require('./User')(seq),
-    patternsModel: require('./Pattern')(seq),
-    patternRecordsModel: require('./PatternRecord')(seq)
+    usersModel,
+    patternsModel,
+    patternRecordsModel
 };
 
