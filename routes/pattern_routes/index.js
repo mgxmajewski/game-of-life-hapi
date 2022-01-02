@@ -3,7 +3,8 @@
 const {
     fetchPatterns,
     createPattern,
-    fetchPatternByPk
+    fetchPatternByPk,
+    capturePattern
 } = require('../../utils/patternUtil');
 const { sendGrid } = require('../../grid_utils');
 
@@ -92,6 +93,47 @@ exports.configurePatternRoutes = (server) => {
                     const patternFromReq = request.payload.pattern;
                     newPattern = await createPattern(
                         request.payload.patternName,
+                        patternFromReq)
+                        .then((createdNewPattern) => {
+
+                            return h.response({ messages: [`Account successfully created`] }).code(200);
+                        })
+                        .catch((err) => {
+
+                            console.log('Throw Err From SequelizeValidationError Handler');
+                            throw err;
+                        });
+
+                }
+                catch (err) {
+
+                    if (isSequelizeError(err)) {
+                        return sequelizeErrorsResponse(h, err);
+                    }
+
+                    return h.response({ messages: err.errors }).code(418);
+                }
+
+                return newPattern;
+            }
+        },
+        {
+            method: 'POST',
+            path: '/pattern/capture',
+            config: {
+                auth: 'jwt',
+                description: 'Capture pattern',
+                tags: ['api', 'patterns']
+            },
+            handler: async function (request, h) {
+
+                let newPattern = {};
+                try {
+                    console.log(`request.payload: ` + JSON.stringify(request.payload));
+                    const patternFromReq = request.payload.pattern;
+                    newPattern = await capturePattern(
+                        request.payload.creator,
+                        request.payload.snapshot_name,
                         patternFromReq)
                         .then((createdNewPattern) => {
 
