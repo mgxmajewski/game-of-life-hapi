@@ -64,5 +64,10 @@ module.exports = (sequelize) => {
         timestamps: true
     });
 
+    User.associate = (models) => {
+
+        User.hasMany(models.Pattern_Record);
+    };
+
     return User;
 };

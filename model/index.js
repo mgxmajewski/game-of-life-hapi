@@ -34,6 +34,7 @@ seq.sync()
 
 module.exports = {
     usersModel: require('./User')(seq),
-    patternsModel: require('./Pattern')(seq)
+    patternsModel: require('./Pattern')(seq),
+    patternRecordsModel: require('./PatternRecord')(seq)
 };
 
