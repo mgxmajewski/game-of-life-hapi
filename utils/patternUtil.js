@@ -1,6 +1,7 @@
 'use strict';
 
 const Models = require('../model');
+const { Sequelize } = require('sequelize');
 
 const User = Models.usersModel;
 const Pattern = Models.patternsModel;
@@ -83,7 +84,10 @@ const fetchPatternRecords = async (id) => {
     try {
         return await PatternRecord.findAll({
             where: { creator: id },
-            include: [User],
+            include: {
+                model: User,
+                attributes: ['id']
+            },
             attributes: ['id','snapshot_name']
         });
 
