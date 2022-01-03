@@ -5,7 +5,8 @@ const {
     createPattern,
     fetchPatternByPk,
     capturePattern,
-    fetchPatternRecords
+    fetchPatternRecords,
+    fetchPatternRecordByPk
 } = require('../../utils/patternUtil');
 const { sendGrid } = require('../../grid_utils');
 
@@ -66,6 +67,41 @@ exports.configurePatternRoutes = (server) => {
         },
         {
             method: 'GET',
+            path: '/pattern-record/{pk}',
+            config: {
+                auth: 'jwt',
+                description: 'Find Pattern Record By Pk',
+                tags: ['api', 'pattern record']
+            },
+
+
+            handler: async function (request, h) {
+
+                const { token } = request.auth;
+                try {
+                    console.log(request.params);
+                    const { pk } = request.params;
+                    await fetchPatternRecordByPk(pk).then(
+                        (patternFromDb) => {
+
+                            return sendGrid(patternFromDb.pattern, token);
+                        }).catch((err) => {
+
+                        console.log('Throw Err From Handler');
+                        throw err;
+                    });
+
+                }
+                catch (err) {
+                    console.error('Ouch in Handler', err);
+                    return { response: err.errors };
+                }
+
+                return 'pattern record loaded';
+            }
+        },
+        {
+            method: 'GET',
             path: '/pattern/{pk}',
             config: {
                 auth: 'jwt',
@@ -96,7 +132,7 @@ exports.configurePatternRoutes = (server) => {
                     return { response: err.errors };
                 }
 
-                return 'pattern loaded';
+                return 'pattern record loaded';
             }
         },
         {
