@@ -1,11 +1,28 @@
 'use strict';
 
 const Models = require('../model');
-const { Sequelize } = require('sequelize');
+// const { Sequelize } = require('sequelize');
 
 const User = Models.usersModel;
 const Pattern = Models.patternsModel;
 const PatternRecord = Models.patternRecordsModel;
+
+
+
+/**
+ * @param {Model} model
+ * @param {Integer} pk
+ */
+
+const findByPkDecorator = async (model, pk) => {
+
+    const result = await model.findByPk(pk);
+    if (result === null) {
+        return null;
+    }
+
+    return result;
+};
 
 const fetchPatterns = async () => {
 
@@ -25,12 +42,7 @@ const fetchPatterns = async () => {
 
 const fetchPatternByPk = async (pk) => {
 
-    const PatternById = await Pattern.findByPk(pk);
-    if (PatternById === null) {
-        return null;
-    }
-
-    return PatternById;
+    return await findByPkDecorator(Pattern, pk);
 };
 
 const createPattern = async (name, grid) => {
@@ -53,19 +65,19 @@ const createPattern = async (name, grid) => {
     return { result };
 };
 
-const capturePattern = async (creator,snapshot_name, grid) => {
+const capturePattern = async (creator,snapshot_name, pattern) => {
 
     console.log('Inside utils::PatternUtil.js::createPattern');
     let result = {};
     // console.log(`parseInt(id): ` + typeof parseInt(creator));
     const creatorUserId = parseInt(creator,10);
-    console.log(`creatorUserId: ` + JSON.stringify(creatorUserId));
-    console.log(`creatorUserId: ` + creatorUserId);
+    // console.log(`creatorUserId: ` + JSON.stringify(creatorUserId));
+    // console.log(`creatorUserId: ` + creatorUserId);
     try {
         const patternRecord = await PatternRecord.build({
             creator: creatorUserId,
             snapshot_name,
-            pattern: grid
+            pattern
         }).save();
         await Pattern.sync();
         result = patternRecord.toJSON();
@@ -98,10 +110,16 @@ const fetchPatternRecords = async (id) => {
     }
 };
 
+const fetchPatternRecordByPk = async (pk) => {
+
+    return await findByPkDecorator(PatternRecord, pk);
+};
+
 module.exports = {
     fetchPatterns,
     createPattern,
     fetchPatternByPk,
     capturePattern,
-    fetchPatternRecords
+    fetchPatternRecords,
+    fetchPatternRecordByPk
 };
