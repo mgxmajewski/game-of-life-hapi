@@ -3,7 +3,7 @@
 const Redis = require('redis');
 const { promisify } = require('util');
 
-const redisClient = Redis.createClient();
+const redisClient = Redis.createClient(6379, process.env.REDIS_HOST);
 const getRedisAsync = promisify(redisClient.get).bind(redisClient);
 
 redisClient.set('key', 'value', Redis.print);

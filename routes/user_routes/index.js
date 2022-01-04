@@ -14,7 +14,7 @@ const JwtDecode = require('jwt-decode');
 const Redis = require('redis');
 const { promisify } = require('util');
 
-const redisClient = Redis.createClient();
+const redisClient = Redis.createClient(6379, process.env.REDIS_HOST);
 const getRedisAsync = promisify(redisClient.get).bind(redisClient);
 const delRedisAsync = promisify(redisClient.del).bind(redisClient);
 
@@ -332,6 +332,8 @@ exports.configureUserRoutes = (server) => {
 
                 // let newAccessToken;
                 const { refreshToken } = request.state;
+
+                console.log(`try logout`);
 
                 if (refreshToken === undefined) {
                     return h.response('No Refresh Token').code(401);
