@@ -2,15 +2,13 @@
 
 const { Sequelize } = require('sequelize');
 
-const Config = require('../config');
-
-const seq = new Sequelize(Config.DbConfig.DEVELOPMENT.DB_NAME,
-    Config.DbConfig.DEVELOPMENT.DB_USER,
-    Config.DbConfig.DEVELOPMENT.DB_PASS,
+const seq = new Sequelize(process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASS,
     {
-        host: Config.DbConfig.DEVELOPMENT.DB_HOST,
-        port: Config.DbConfig.DEVELOPMENT.DB_PORT,
-        dialect: Config.DbConfig.DEVELOPMENT.DIALECT,
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        dialect: process.env.DIALECT,
         pool: {
             max: 50,
             min: 0,

@@ -1,7 +1,6 @@
 'use strict';
 
 const Axios = require('axios');
-const Config = require('../config');
 const { getTokenId } = require('../utils/getTokenId');
 
 const data = (id) => {
@@ -21,7 +20,7 @@ const configGetGrid = (id) => {
 
     return {
         method: 'post',
-        url: `${Config.AppConfig.DEVELOPMENT.GQL_ENDPOINT}`,
+        url: `${process.env.GQL_ENDPOINT}`,
         headers: {
             'Content-Type': 'application/json'
         },
