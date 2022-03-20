@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  db:
+  game-of-life-db:
     image: postgres
     ports:
       - "5432:5432"
@@ -14,18 +14,12 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-        - db
+        - game-of-life-db
 
   gql:
     build: ../game-of-life-realtime
     ports:
       - "4000:4000"
-
-  gatsby:
-    build: ../game-of-life-front
-    ports:
-      - "80:9000"
-    command: sh -c "gatsby build && gatsby serve -H '0.0.0.0'"
 
   redis:
     image: redis
