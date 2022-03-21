@@ -21,6 +21,8 @@ services:
     build: ../game-of-life-realtime
     ports:
       - "4000:4000"
+    environment:
+      ACCESS_SECRET: $ACCESS_SECRET
 
   redis:
     image: redis
