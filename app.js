@@ -18,14 +18,7 @@ const init = async () => {
         host: process.env.HAPI_HOST || DEFAULT_HOST,
         port: parseInt(process.env.PORT, RADIX) || DEFAULT_PORT,
         routes: {
-            cors: {
-                origin: ['*'], // an array of origins or 'ignore'
-                headers: ['Authorization', 'Access-Control-Allow-Headers', 'Content-Type'], // an array of strings - 'Access-Control-Allow-Headers'
-                exposedHeaders: ['Accept', 'Access-Control-Expose-Headers'], // an array of exposed headers - 'Access-Control-Expose-Headers',
-                additionalExposedHeaders: ['Accept', 'X-Requested-With'], // an array of additional exposed headers
-                maxAge: 60,
-                credentials: true // boolean - 'Access-Control-Allow-Credentials'
-            }
+            cors: true
         }
     });
 
