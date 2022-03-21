@@ -20,7 +20,7 @@ const init = async () => {
         port: parseInt(process.env.PORT, RADIX) || DEFAULT_PORT,
         routes: {
             cors: true
-        },
+        }
         // tls: {
         //     key: Fs.readFileSync(process.env.SSL_KEY_PATH),
         //     cert: Fs.readFileSync(process.env.SSL_CERT_PATH)
@@ -29,19 +29,10 @@ const init = async () => {
 
     server.route({
         method: 'GET',
-        path: '/',
-        handler: (request, h) => {
-
-            return 'Hello World!';
-        }
-    });
-
-    server.route({
-        method: 'GET',
         path: '/api',
         handler: (request, h) => {
 
-            return 'Hello World! API!';
+            return 'Hello World! API';
         }
     });
 
