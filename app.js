@@ -2,6 +2,7 @@
 
 require('dotenv').config();
 const Hapi = require('@hapi/hapi');
+const Fs = require('fs');
 const { configureGridRoutes } = require('./routes/grid_routes');
 const { configureUserRoutes } = require('./routes/user_routes');
 const { configurePatternRoutes } = require('./routes/pattern_routes');
@@ -19,6 +20,10 @@ const init = async () => {
         port: parseInt(process.env.PORT, RADIX) || DEFAULT_PORT,
         routes: {
             cors: true
+        },
+        tls: {
+            key: Fs.readFileSync(process.env.SSL_KEY_PATH),
+            cert: Fs.readFileSync(process.env.SSL_CERT_PATH)
         }
     });
 
