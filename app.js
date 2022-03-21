@@ -30,10 +30,10 @@ const init = async () => {
 
     server.route({
         method: 'GET',
-        path: '/api',
+        path: '/',
         handler: (request, h) => {
 
-            return 'Hello World! API';
+            return 'Hello World! API NEW';
         }
     });
 
