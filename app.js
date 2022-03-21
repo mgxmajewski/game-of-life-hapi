@@ -36,6 +36,15 @@ const init = async () => {
         }
     });
 
+    server.route({
+        method: 'GET',
+        path: '/api',
+        handler: (request, h) => {
+
+            return 'Hello World! API!';
+        }
+    });
+
 
     await server.register(require('hapi-auth-jwt2'));
     await server.register(require('./auth'));
