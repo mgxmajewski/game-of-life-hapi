@@ -22,7 +22,7 @@ const init = async () => {
             cors: {
                 origin: ['*'],
                 headers: ['Access-Control-Allow-Headers', 'Access-Control-Allow-Origin','Accept', 'Authorization', 'Content-Type', 'If-None-Match', 'Accept-language'],
-                additionalHeaders: ['Access-Control-Allow-Headers: Origin, Content-Type, x-ms-request-id , Authorization'],
+                // additionalHeaders: ['Access-Control-Allow-Headers: Origin, Content-Type, x-ms-request-id , Authorization'],
                 credentials: true
             }
         }
