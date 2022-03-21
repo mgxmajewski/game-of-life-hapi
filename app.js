@@ -21,10 +21,10 @@ const init = async () => {
         routes: {
             cors: true
         },
-        tls: {
-            key: Fs.readFileSync(process.env.SSL_KEY_PATH),
-            cert: Fs.readFileSync(process.env.SSL_CERT_PATH)
-        }
+        // tls: {
+        //     key: Fs.readFileSync(process.env.SSL_KEY_PATH),
+        //     cert: Fs.readFileSync(process.env.SSL_CERT_PATH)
+        // }
     });
 
 
