@@ -19,12 +19,13 @@ const init = async () => {
         host: process.env.HAPI_HOST || DEFAULT_HOST,
         port: parseInt(process.env.PORT, RADIX) || DEFAULT_PORT,
         routes: {
-            cors: true
+            cors: {
+                origin: ['*'],
+                headers: ['Access-Control-Allow-Headers', 'Access-Control-Allow-Origin','Accept', 'Authorization', 'Content-Type', 'If-None-Match', 'Accept-language'],
+                additionalHeaders: ['Access-Control-Allow-Headers: Origin, Content-Type, x-ms-request-id , Authorization'],
+                credentials: true
+            }
         }
-        // tls: {
-        //     key: Fs.readFileSync(process.env.SSL_KEY_PATH),
-        //     cert: Fs.readFileSync(process.env.SSL_CERT_PATH)
-        // }
     });
 
     server.route({
