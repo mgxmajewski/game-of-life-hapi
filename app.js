@@ -18,6 +18,8 @@ const init = async () => {
     const server = Hapi.Server(
         {
             state: {
+                isSecure: true,
+                isHttpOnly: true,
                 isSameSite: 'None'
             },
             host: process.env.HAPI_HOST || DEFAULT_HOST,
