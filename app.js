@@ -20,6 +20,7 @@ const init = async () => {
         port: parseInt(process.env.PORT, RADIX) || DEFAULT_PORT,
         routes: {
             cors: {
+                // Merge check
                 origin: ['*'],
                 credentials: true
             }
