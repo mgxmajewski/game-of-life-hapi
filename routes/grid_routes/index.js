@@ -52,7 +52,7 @@ const clickedCellHandlerConfig = {
         const updatedGrid = handleClickedCell(grid, cell);
         const { token } = request.auth;
         sendGrid(updatedGrid, token);
-        return h.response('changed clicked cell state').code(200);
+        return 'changed clicked cell state';
     }
 };
 
