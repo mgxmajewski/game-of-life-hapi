@@ -41,16 +41,16 @@ const sequelizeErrorsResponse = (h, err) => {
 //         .takeover();
 // };
 
-const cookieOptions = {
-    // ttl: 365 * 24 * 60 * 60 * 1000, // expires a year from today
-    // encoding: 'none',    // we already used JWT to encode
-    isSecure: false,      // warm & fuzzy feelings
-    isHttpOnly: true,
-    isSameSite: false, // prevent client alteration
-    // clearInvalid: false, // remove invalid cookies
-    // strictHeader: true,  // don't allow violations of RFC 6265
-    path: '/'            // set the cookie for all routes
-};
+// const cookieOptions = {
+//     // ttl: 365 * 24 * 60 * 60 * 1000, // expires a year from today
+//     // encoding: 'none',    // we already used JWT to encode
+//     isSecure: false,      // warm & fuzzy feelings
+//     isHttpOnly: true,
+//     isSameSite: 'None', // prevent client alteration
+//     // clearInvalid: false, // remove invalid cookies
+//     // strictHeader: true,  // don't allow violations of RFC 6265
+//     path: '/'            // set the cookie for all routes
+// };
 
 exports.configureUserRoutes = (server) => {
 
@@ -241,7 +241,7 @@ exports.configureUserRoutes = (server) => {
                                 redisClient.set(userFromDb.id, JSON.stringify(session));
                                 const accessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '10s' });
                                 const refreshToken = Jwt.sign({ id: userFromDb.id }, process.env.REFRESH_SECRET);
-                                return h.response({ accessToken }).state('refreshToken', refreshToken, cookieOptions);
+                                return h.response({ accessToken }).state('refreshToken', refreshToken);
                             }
                         })
                         .catch((err) => {
@@ -353,7 +353,7 @@ exports.configureUserRoutes = (server) => {
 
                 const removedFromList = await delRedisAsync(userId);
                 console.log(removedFromList);
-                h.unstate('refreshToken', cookieOptions);
+                h.unstate('refreshToken');
                 return h.continue;
             }
         }
