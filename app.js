@@ -18,7 +18,8 @@ const init = async () => {
     const server = Hapi.Server(
         {
             state: {
-                isSameSite: false
+                // Allows httpOnly cookie to be set for cross-origin client
+                isSameSite: 'None'
             },
             host: process.env.HAPI_HOST || DEFAULT_HOST,
             port: parseInt(process.env.PORT, RADIX) || DEFAULT_PORT,
