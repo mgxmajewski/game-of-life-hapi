@@ -12,7 +12,7 @@ const {
 } = require('../../utils/userUtil');
 const JwtDecode = require('jwt-decode');
 const Redis = require('redis');
-const {promisify} = require('util');
+const { promisify } = require('util');
 
 const redisClient = Redis.createClient(6379, process.env.REDIS_HOST);
 const getRedisAsync = promisify(redisClient.get).bind(redisClient);
@@ -69,7 +69,8 @@ exports.configureUserRoutes = (server) => {
                     const allUsers = await fetchUsers();
                     console.log('success');
                     return allUsers;
-                } catch (err) {
+                }
+                catch (err) {
                     console.error('Ouch in getUsers', err);
                 }
             }
@@ -95,7 +96,7 @@ exports.configureUserRoutes = (server) => {
                 let user = {};
                 try {
                     console.log(request.params);
-                    const {userName, emailAddress} = request.params;
+                    const { userName, emailAddress } = request.params;
                     const checkedForNullEmail = emailAddress ? emailAddress : '';
                     user = await findUsers(userName, checkedForNullEmail).then(
                         (userFromDb) => {
@@ -107,9 +108,10 @@ exports.configureUserRoutes = (server) => {
                         throw err;
                     });
 
-                } catch (err) {
+                }
+                catch (err) {
                     console.error('Ouch in Handler', err);
-                    return {response: err.errors};
+                    return { response: err.errors };
                 }
 
                 return user;
@@ -151,7 +153,7 @@ exports.configureUserRoutes = (server) => {
                         request.payload.emailAddress)
                         .then((registeredNewUser) => {
 
-                            return h.response({messages: [`Account successfully created`]}).code(200);
+                            return h.response({ messages: [`Account successfully created`] }).code(200);
                         })
                         .catch((err) => {
 
@@ -159,13 +161,14 @@ exports.configureUserRoutes = (server) => {
                             throw err;
                         });
 
-                } catch (err) {
+                }
+                catch (err) {
 
                     if (isSequelizeError(err)) {
                         return sequelizeErrorsResponse(h, err);
                     }
 
-                    return h.response({messages: err.errors}).code(418);
+                    return h.response({ messages: err.errors }).code(418);
                 }
 
                 return newUser;
@@ -180,9 +183,10 @@ exports.configureUserRoutes = (server) => {
                 validate: {
                     headers: Joi.object().keys({
                         authorization: Joi.string().required()
-                    }).options({allowUnknown: true})
+                    }).options({ allowUnknown: true })
                 }
             },
+
 
             handler: async function (request, h) {
 
@@ -198,7 +202,8 @@ exports.configureUserRoutes = (server) => {
 
                             if (isUserInDB === null) {
                                 throw new Error('User not registered');
-                            } else {
+                            }
+                            else {
                                 return isUserInDB;
                             }
                         });
@@ -212,7 +217,8 @@ exports.configureUserRoutes = (server) => {
 
                             if (passwordMatch === false) {
                                 throw new Error('Wrong password');
-                            } else {
+                            }
+                            else {
                                 return true;
                             }
                         });
@@ -233,9 +239,9 @@ exports.configureUserRoutes = (server) => {
                                 };
                                 // create the session in Redis
                                 redisClient.set(userFromDb.id, JSON.stringify(session));
-                                const accessToken = Jwt.sign(session, process.env.ACCESS_SECRET, {expiresIn: '10s'});
-                                const refreshToken = Jwt.sign({id: userFromDb.id}, process.env.REFRESH_SECRET);
-                                return h.response({accessToken}).state('refreshToken', refreshToken);
+                                const accessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '10s' });
+                                const refreshToken = Jwt.sign({ id: userFromDb.id }, process.env.REFRESH_SECRET);
+                                return h.response({ accessToken }).state('refreshToken', refreshToken, cookieOptions);
                             }
                         })
                         .catch((err) => {
@@ -243,13 +249,14 @@ exports.configureUserRoutes = (server) => {
                             console.log('Throw Err From Handler');
                             throw err;
                         });
-                } catch (err) {
+                }
+                catch (err) {
 
                     if (isSequelizeError(err)) {
                         return sequelizeErrorsResponse(h, err);
                     }
 
-                    return h.response({messages: [err.message]}).code(418);
+                    return h.response({ messages: [err.message] }).code(418);
                 }
 
                 return AuthResponse;
@@ -271,7 +278,7 @@ exports.configureUserRoutes = (server) => {
             handler: async function (request, h) {
 
                 let newAccessToken;
-                const {refreshToken} = request.state;
+                const { refreshToken } = request.state;
 
                 if (refreshToken === undefined) {
                     return h.response('No Refresh Token').code(401);
@@ -302,7 +309,7 @@ exports.configureUserRoutes = (server) => {
                         return h.response(403).code(403);
                     }
 
-                    newAccessToken = Jwt.sign(session, process.env.ACCESS_SECRET, {expiresIn: '5h'});
+                    newAccessToken = Jwt.sign(session, process.env.ACCESS_SECRET, { expiresIn: '5h' });
                 });
 
                 return h.response(newAccessToken);
@@ -324,7 +331,7 @@ exports.configureUserRoutes = (server) => {
             handler: async function (request, h) {
 
                 // let newAccessToken;
-                const {refreshToken} = request.state;
+                const { refreshToken } = request.state;
 
                 console.log(`try logout`);
 

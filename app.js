@@ -18,14 +18,14 @@ const init = async () => {
     const server = Hapi.Server(
         {
             state: {
-                isSecure: true,
-                isHttpOnly: true,
+                // Allows httpOnly cookie to be set for cross-origin client
                 isSameSite: 'None'
             },
             host: process.env.HAPI_HOST || DEFAULT_HOST,
             port: parseInt(process.env.PORT, RADIX) || DEFAULT_PORT,
             routes: {
                 cors: {
+                    // Merge check
                     origin: ['*'],
                     credentials: true
                 }
