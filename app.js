@@ -3,9 +3,9 @@
 require('dotenv').config();
 const Hapi = require('@hapi/hapi');
 const Fs = require('fs');
-const { configureGridRoutes } = require('./routes/grid_routes');
-const { configureUserRoutes } = require('./routes/user_routes');
-const { configurePatternRoutes } = require('./routes/pattern_routes');
+const {configureGridRoutes} = require('./routes/grid_routes');
+const {configureUserRoutes} = require('./routes/user_routes');
+const {configurePatternRoutes} = require('./routes/pattern_routes');
 const Auth = require('./auth');
 
 const init = async () => {
@@ -15,20 +15,21 @@ const init = async () => {
     const RADIX = 10;
 
 
-    const server = Hapi.server({
-        host: process.env.HAPI_HOST || DEFAULT_HOST,
-        port: parseInt(process.env.PORT, RADIX) || DEFAULT_PORT,
-        routes: {
-            cors: {
-                // Merge check
-                origin: ['*'],
-                credentials: true
+    const server = Hapi.Server(
+        {
+            state: {
+                isSameSite: false
+            },
+            host: process.env.HAPI_HOST || DEFAULT_HOST,
+            port: parseInt(process.env.PORT, RADIX) || DEFAULT_PORT,
+            routes: {
+                cors: {
+                    // Merge check
+                    origin: ['*'],
+                    credentials: true
+                }
             }
-        },
-        state: {
-            isSameSite: 'None'
-        }
-    });
+        });
 
     server.route({
         method: 'GET',
@@ -43,7 +44,8 @@ const init = async () => {
     await server.register(require('hapi-auth-jwt2'));
     await server.register(require('./auth'));
     server.auth.strategy('jwt', 'jwt',
-        { key: process.env.ACCESS_SECRET, // Never Share your secret key
+        {
+            key: process.env.ACCESS_SECRET, // Never Share your secret key
             validate: Auth.validate  // validate function defined above
         });
 
