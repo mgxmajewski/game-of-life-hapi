@@ -24,6 +24,9 @@ const init = async () => {
                 origin: ['*'],
                 credentials: true
             }
+        },
+        state: {
+            isSameSite: 'None'
         }
     });
 
