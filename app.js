@@ -51,7 +51,6 @@ const init = async () => {
         });
 
     // server.auth.default('jwt');
-    // Check pull
 
     await server.start();
 
